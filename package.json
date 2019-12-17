@@ -2,9 +2,10 @@
   "name": "chat-app",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/app.js",
   "scripts": {
-    "tsc": "tsc",
-    "start": "copyfiles -e ./src/**/*.ts -u 1 ./src/**/* ./dist && tsc && node ./dist/app.js",
+    "start": "ts-node ./src/app.ts",
+    "build": "copyfiles -e ./src/**/*.ts -u 1 ./src/**/* ./dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,11 +14,16 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "pug": "^2.0.4"
+    "pg": "^7.14.0",
+    "pug": "^2.0.4",
+    "typeorm": "^0.2.21"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
+    "@types/node": "^12.12.18",
     "copyfiles": "^2.1.1",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^8.5.4",
     "typescript": "^3.7.3"
   }
 }

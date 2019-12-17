@@ -1,7 +1,8 @@
 import * as express from 'express';
-import { getIndexPage } from '../controllers/homeController';
+import * as homeController from '../controllers/homeController';
 const router: express.Router = express.Router();
 
-router.get('/', getIndexPage);
+router.get('/', homeController.getIndexPage);
+router.get('/users', homeController.getUsersPage)
 
 export { router };
