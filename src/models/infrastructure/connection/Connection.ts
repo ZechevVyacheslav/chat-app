@@ -1,5 +1,5 @@
 import { createConnection } from 'typeorm';
-import { User } from '../entity/User';
+import { User } from '../../domain/core/User';
 
 export const connection = createConnection({
   type: 'postgres',

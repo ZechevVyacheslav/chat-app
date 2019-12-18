@@ -1,26 +1,29 @@
 import * as express from 'express';
-import { connection } from '../models/connection/Connection';
-import { User } from '../models/entity/User';
+import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import { User } from '../models/domain/core/User';
 
-export const getIndexPage = (req: express.Request, res: express.Response) => {
-  res.render('index', {
-    message: 'Hello on the index page'
-  });
-};
+export class HomeController {
+  private userService: UserService;
 
-export const getUsersPage = (req: express.Request, res: express.Response) => {
-  connection
-    .then(async connection => {
-      // const users: User[] = await connection.manager.find(User);
-      const users: User[] = await connection
-        .createQueryBuilder()
-        .select('user')
-        .from(User, 'user')
-        .getMany();
-      const usersNames: string[] = users.map(user => user.username);
-      res.render('users', {
-        users: usersNames
-      });
-    })
-    .catch(error => console.error('Error ', error));
-};
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
+
+  getIndexPage = (req: express.Request, res: express.Response) => {
+    res.render('index', {
+      message: 'Hello on the index page'
+    });
+  };
+
+  register = (req: express.Request, res: express.Response) => {
+    const user: User = new User();
+    user.email = 'dummy@gmail.com';
+    user.password = 'passme';
+    user.username = 'Dummy';
+
+    this.userService.registerUser(user);
+    res.render('index', {
+      message: 'Saving....'
+    });
+  };
+}
