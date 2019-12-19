@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
-import { User } from '../models/domain/core/User';
 
 export class HomeController {
   private userService: UserService;
@@ -10,6 +9,7 @@ export class HomeController {
   }
 
   getIndexPage = (req: express.Request, res: express.Response) => {
+    res.status(200); // 200 || 304
     res.render('index', {
       message: 'Hello on the index page'
     });
@@ -20,12 +20,15 @@ export class HomeController {
   };
 
   register = (req: express.Request, res: express.Response) => {
-    const user: User = new User();
-    user.email = 'dummy@gmail.com';
-    user.password = 'passme';
-    user.username = 'Dummy';
+    const {email, username, password} = req.body;
 
-    this.userService.registerUser(user);
+    if(email.length < 1 || username.length < 1 || password.length < 1) {
+      res.statusMessage = 'Got invalid data.'
+      res.status(400);
+      return res.render('registration', {});
+    }
+
+    this.userService.registerUser(email, username, password);
     res.redirect('/rooms');
   };
 

@@ -9,16 +9,16 @@ block content
         .page-content__title
             h1 Регистрация
         .page-content__login-form
-            form(action="/register" method="POST")
+            form(action="/register" method="post")
                 .form-group
                     label(for="email") Email:
-                    input.form-control#email(type="email" aria-describedby="emailHelp" placeholder="Введите email")
+                    input.form-control#email(type="email" name="email" aria-describedby="emailHelp" placeholder="Введите email")
                 .form-group
                     label(for="username") Username:
-                    input.form-control#username(type="text" placeholder="Введите username")
+                    input.form-control#username(type="text" name="username" placeholder="Введите username")
                 .form-group
                     label(for="password") Пароль:
-                    input.form-control#password(type="password" placeholder="Введите пароль")
+                    input.form-control#password(type="password" name="password" placeholder="Введите пароль")
                 .button-group
-                    button.btn.btn-primary Зарегестрироваться
+                    button.btn.btn-primary(type="submit") Зарегестрироваться
                     a.btn.btn-danger(href="/") Вернуться на главную

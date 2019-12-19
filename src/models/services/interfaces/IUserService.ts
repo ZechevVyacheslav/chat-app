@@ -1,5 +1,5 @@
 import { User } from '../../domain/core/User';
 
 export interface IUserService {
-    registerUser(user: User): void;
+  registerUser(email: string, username: string, password: string): void;
 }

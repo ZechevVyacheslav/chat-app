@@ -1,9 +1,6 @@
-// import { UserRepository } from '../repository/UserRepository';
 import { IUserService } from '../../services/interfaces/IUserService';
 import { IUserRepository } from '../../domain/interfaces/IUserRepository'
-// import { connection } from '../connection/Connection';
 import { User } from '../../domain/core/User';
-// import { Connection } from 'typeorm';
 
 export class UserService implements IUserService {
   private userRepository: IUserRepository;
@@ -12,7 +9,12 @@ export class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  registerUser(user: User) {
+  registerUser(email, username, password) {
+    const user = new User();
+    user.email = email;
+    user.username = username;
+    user.password = password;
+
     this.userRepository.addUser(user);
   }
 }
