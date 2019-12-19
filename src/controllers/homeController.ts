@@ -15,6 +15,10 @@ export class HomeController {
     });
   };
 
+  getRegistrationPage = (req: express.Request, res: express.Response) => {
+    res.render('registration', {});
+  };
+
   register = (req: express.Request, res: express.Response) => {
     const user: User = new User();
     user.email = 'dummy@gmail.com';
@@ -22,8 +26,10 @@ export class HomeController {
     user.username = 'Dummy';
 
     this.userService.registerUser(user);
-    res.render('index', {
-      message: 'Saving....'
-    });
+    res.redirect('/rooms');
+  };
+
+  getRoomsPage = (req: express.Request, res: express.Response) => {
+    res.render('rooms', {});
   };
 }

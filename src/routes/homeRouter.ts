@@ -15,7 +15,9 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
   const homeController: HomeController = new HomeController(userService);
 
   router.get('/', homeController.getIndexPage);
-  router.get('/register', homeController.register);
+  router.get('/register', homeController.getRegistrationPage);
+  router.post('/register', homeController.register);
+  router.get('/rooms', homeController.getRoomsPage);
 })();
 
 export { router };

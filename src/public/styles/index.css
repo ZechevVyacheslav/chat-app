@@ -1,0 +1,30 @@
+.page-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.page-content__title {
+  margin: 3rem 0;
+}
+
+.page-content__nav-buttons {
+  margin-top: 7rem;
+}
+
+.website-title {
+  font-size: 4rem;
+  color: red;
+}
+
+.button-group {
+  width: 30rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-group .btn-lg {
+  width: 220px;
+}
