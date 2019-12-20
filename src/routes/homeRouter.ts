@@ -9,9 +9,6 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 
 (async () => {
   const userRepository = (await connection).getCustomRepository(UserRepository);
-  // const userRepository = await connection.then(connection =>
-  //   connection.getCustomRepository(UserRepository)
-  // );
   const userService: UserService = new UserService(userRepository);
   const homeController: HomeController = new HomeController(userService);
 
