@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "start": "ts-node ./src/server.ts",
     "build": "copyfiles -e ./src/**/*.ts -u 1 ./src/**/* ./dist && tsc",
     "test": "jest"
   },

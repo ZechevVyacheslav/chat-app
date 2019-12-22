@@ -2,12 +2,13 @@ import * as express from 'express';
 import { UserRepository } from '../models/infrastructure/repository/UserRepository';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 import { HomeController } from './HomeController';
+import { User } from '../models/domain/core/User';
 jest.mock('../models/infrastructure/repository/UserRepository');
 jest.mock('../models/infrastructure/serviceImpl/UserService');
 
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
-const homeController = new HomeController(userService);
+let userRepository = {} as any;
+let userService = new UserService(userRepository);
+let homeController = new HomeController(userService);
 
 let req;
 let res;
@@ -78,6 +79,58 @@ describe('Testing home controller', () => {
       };
 
       await homeController.register(req, res);
+
+      expect(res.statusCode).toEqual(400);
+    });
+  });
+
+  describe('Login process', () => {
+    it('Testing login (with valid body)', async () => {
+      req.body = {
+        username: 'Slava',
+        password: '12345'
+      };
+
+      const userFromBD = new User();
+      userFromBD.username = 'Slava';
+      userFromBD.password = '12345';
+      
+      userService.getUserByUsername = jest.fn((username: string) =>
+        Promise.resolve(userFromBD)
+      );
+
+      await homeController.login(req, res);
+
+      expect(res.redirect).toHaveBeenCalledWith('/rooms');
+      expect(res.statusCode).toEqual(302);
+    });
+
+    it('Testing login (with invalid username)', async () => {
+      req.body = {
+        username: '',
+        password: '12345'
+      };
+
+      await homeController.login(req, res);
+
+      expect(res.statusCode).toEqual(400);
+    });
+
+    it('Testing login (with invalid password)', async () => {
+      req.body = {
+        username: 'Slava',
+        password: '12'
+      };
+
+      const userFromBD = new User();
+      userFromBD.username = 'Slava';
+      userFromBD.password = 'password';
+      
+      userService.getUserByUsername = jest.fn((username: string) =>
+        Promise.resolve(userFromBD)
+      );
+
+      await homeController.login(req, res);
 
       expect(res.statusCode).toEqual(400);
     });

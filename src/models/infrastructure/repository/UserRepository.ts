@@ -5,16 +5,17 @@ import { User } from '../../domain/core/User';
 @EntityRepository(User)
 export class UserRepository extends Repository<User>
   implements IUserRepository {
-  findUserByEmail() {
-    return new User(); // TODO
+  findUserByEmail(email: string) {
+    return this.findOne({ where: { email } });
   }
 
   findUserById() {
     return new User(); // TODO
   }
 
-  findUserByName() {
-    return new User(); // TODO
+  findUserByUsername(username: string) {
+    return this.findOne({ where: { username } });
+
   }
 
   addUser(user: User) {

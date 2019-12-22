@@ -19,16 +19,40 @@ export class HomeController {
     res.render('registration', {});
   };
 
-  register = (req: express.Request, res: express.Response) => {
-    const {email, username, password} = req.body;
+  getLoginPage = (req: express.Request, res: express.Response) => {
+    res.render('login', {});
+  };
 
-    if(email.length < 1 || username.length < 1 || password.length < 1) {
-      res.statusMessage = 'Got invalid data.'
+  register = (req: express.Request, res: express.Response) => {
+    const { email, username, password } = req.body;
+
+    if (email.length < 1 || username.length < 1 || password.length < 1) {
+      res.statusMessage = 'Got invalid data.';
       res.status(400);
       return res.render('registration', {});
     }
 
     this.userService.registerUser(email, username, password);
+    res.redirect('/rooms');
+  };
+
+  login = async (req: express.Request, res: express.Response) => {
+    const { username, password } = req.body;
+
+    if (username.length < 1 || password.length < 1) {
+      res.statusMessage = 'Got invalid data.';
+      res.status(400);
+      return res.render('login', {});
+    }
+
+    const user = await this.userService.getUserByUsername(username);
+
+    if (user.password !== password) {
+      res.statusMessage = 'Got invalid password.';
+      res.status(400);
+      return res.render('login', {});
+    }
+    res.render('rooms', {password: user.password});
     res.redirect('/rooms');
   };
 

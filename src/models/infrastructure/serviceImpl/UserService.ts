@@ -17,4 +17,8 @@ export class UserService implements IUserService {
 
     this.userRepository.addUser(user);
   }
+
+  getUserByUsername(username: string) {
+    return this.userRepository.findUserByUsername(username);
+  }
 }

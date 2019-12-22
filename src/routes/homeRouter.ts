@@ -14,6 +14,8 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 
   router.get('/', homeController.getIndexPage);
   router.get('/register', homeController.getRegistrationPage);
+  router.get('/login', homeController.getLoginPage)
+  router.post('/login', homeController.login)
   router.post('/register', homeController.register);
   router.get('/rooms', homeController.getRoomsPage);
 })();

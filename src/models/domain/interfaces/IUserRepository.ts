@@ -2,7 +2,7 @@ import { User } from '../core/User';
 
 export interface IUserRepository {
     findUserById(id: number): User;
-    findUserByName(name: string): User;
-    findUserByEmail(email: string): User;
+    findUserByUsername(username: string): Promise<User>;
+    findUserByEmail(email: string): Promise<User>;
     addUser(user: User): void;
 }
