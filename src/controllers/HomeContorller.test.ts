@@ -1,5 +1,5 @@
-import * as express from 'express';
-import { UserRepository } from '../models/infrastructure/repository/UserRepository';
+// import * as express from 'express';
+// import { UserRepository } from '../models/infrastructure/repository/UserRepository';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 import { HomeController } from './HomeController';
 import { User } from '../models/domain/core/User';
@@ -101,6 +101,7 @@ describe('Testing home controller', () => {
 
       await homeController.login(req, res);
 
+      expect(userService.getUserByUsername).toBeCalledTimes(1);
       expect(res.redirect).toHaveBeenCalledWith('/rooms');
       expect(res.statusCode).toEqual(302);
     });
@@ -132,23 +133,8 @@ describe('Testing home controller', () => {
 
       await homeController.login(req, res);
 
+      expect(userService.getUserByUsername).toBeCalledTimes(1);
       expect(res.statusCode).toEqual(400);
-    });
-  });
-
-  describe('Index page', () => {
-    it('Rendering index page', async () => {
-      await homeController.getIndexPage(req, res);
-
-      expect(res.statusCode).toEqual(200);
-    });
-  });
-
-  describe('Registration page', () => {
-    it('Rendering registration page', async () => {
-      await homeController.getRegistrationPage(req, res);
-
-      expect(res.statusCode).toEqual(200);
     });
   });
 

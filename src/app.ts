@@ -13,12 +13,41 @@ app.set('view engine', 'pug');
 
 // Middlewares
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'OPTIONS, GET, POST, PUT, PATCH, DELETE'
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    );
+    next();
+  }
+);
 
 // Routes usage
 app.use('/', homeRouter);
 app.use((req: express.Request, res: express.Response) => {
-  res.status(404).send('Not found');
+  res.status(404).json({ message: 'Route not found' });
 });
+
+// Error handler
+app.use(
+  (
+    error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.log(error);
+    const message = error.message;
+    res.json({ message });
+  }
+);
 
 export { app };

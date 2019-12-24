@@ -1,5 +1,11 @@
 import * as express from 'express';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import { User } from 'models/domain/core/User';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+interface IUserRequest extends express.Request {
+  userId: number
+}
 
 export class HomeController {
   private userService: UserService;
@@ -8,55 +14,69 @@ export class HomeController {
     this.userService = userService;
   }
 
-  getIndexPage = (req: express.Request, res: express.Response) => {
-    res.status(200); // 200 || 304
-    res.render('index', {
-      message: 'Hello on the index page'
-    });
-  };
-
-  getRegistrationPage = (req: express.Request, res: express.Response) => {
-    res.render('registration', {});
-  };
-
-  getLoginPage = (req: express.Request, res: express.Response) => {
-    res.render('login', {});
-  };
-
-  register = (req: express.Request, res: express.Response) => {
+  register = async (req: express.Request, res: express.Response) => {
     const { email, username, password } = req.body;
 
-    if (email.length < 1 || username.length < 1 || password.length < 1) {
-      res.statusMessage = 'Got invalid data.';
-      res.status(400);
-      return res.render('registration', {});
+    if ((email || '').length < 1) {
+      return res
+        .status(400)
+        .json({ message: 'E-mail too short or not included' });
     }
 
-    this.userService.registerUser(email, username, password);
-    res.redirect('/rooms');
+    if ((username || '').length < 1) {
+      return res
+        .status(400)
+        .json({ message: 'Username too short or not included' });
+    }
+
+    if ((password || '').length < 1) {
+      return res
+        .status(400)
+        .json({ message: 'Password too short or not included' });
+    }
+
+    const user: User = await this.userService.registerUser(
+      email,
+      username,
+      password
+    );
+
+    res.status(201).json({ message: 'User created!', userId: user.user_id });
   };
 
   login = async (req: express.Request, res: express.Response) => {
     const { username, password } = req.body;
 
-    if (username.length < 1 || password.length < 1) {
-      res.statusMessage = 'Got invalid data.';
-      res.status(400);
-      return res.render('login', {});
+    if ((username || '').length < 1) {
+      return res
+        .status(400)
+        .json({ message: 'Username too short or not included' });
+    }
+
+    if ((password || '').length < 1) {
+      return res
+        .status(400)
+        .json({ message: 'Password too short or not included' });
     }
 
     const user = await this.userService.getUserByUsername(username);
+    const isEqual = await bcrypt.compare(password, user.password);
 
-    if (user.password !== password) {
-      res.statusMessage = 'Got invalid password.';
-      res.status(400);
-      return res.render('login', {});
+    if (!isEqual) {
+      return res.status(401).json({ message: 'Wrong password!' });
     }
-    res.render('rooms', {password: user.password});
-    res.redirect('/rooms');
+
+    const token = jwt.sign(
+      { userId: user.user_id, email: user.email, username: user.username },
+      'supersecretprivatkey',
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token, userId: user.user_id });
   };
 
-  getRoomsPage = (req: express.Request, res: express.Response) => {
-    res.render('rooms', {});
+  getRoomsPage = (req: IUserRequest, res: express.Response) => {
+    console.log(req.userId);
+    res.status(200).json({ message: 'Got all rooms' });
   };
 }

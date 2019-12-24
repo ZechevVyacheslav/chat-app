@@ -14,19 +14,16 @@ export class UserRepository extends Repository<User>
   }
 
   findUserByUsername(username: string) {
-    return this.findOne({ where: { username } });
-
+    return this.findOne({ where: { username } }).then(result => {
+      console.log(result);
+      return result;
+    });
   }
 
   addUser(user: User) {
-    return this.save(user)
-      .then(result => {
-        console.log(result);
-        return true;
-      })
-      .catch(err => {
-        console.error(err);
-        return false;
-      });
+    return this.save(user).then(result => {
+      console.log(result);
+      return result;
+    });
   }
 }
