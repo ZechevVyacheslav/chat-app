@@ -4,7 +4,7 @@ import { User } from 'models/domain/core/User';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 interface IUserRequest extends express.Request {
-  userId: number
+  userId: number;
 }
 
 export class HomeController {
@@ -41,7 +41,23 @@ export class HomeController {
       password
     );
 
-    res.status(201).json({ message: 'User created!', userId: user.user_id });
+    const token = jwt.sign(
+      { userId: user.user_id, email: user.email, username: user.username },
+      'supersecretprivatkey',
+      { expiresIn: '1h' }
+    );
+
+    res
+      .status(201)
+      .json({
+        message: 'User created!',
+        user: {
+          userId: user.user_id,
+          email: user.email,
+          username: user.username
+        },
+        token
+      });
   };
 
   login = async (req: express.Request, res: express.Response) => {
