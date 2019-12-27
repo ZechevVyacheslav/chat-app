@@ -1,14 +1,14 @@
 // import * as express from 'express';
 // import { UserRepository } from '../models/infrastructure/repository/UserRepository';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
-import { HomeController } from './HomeController';
+import { AuthController } from './AuthController';
 import { User } from '../models/domain/core/User';
 jest.mock('../models/infrastructure/repository/UserRepository');
 jest.mock('../models/infrastructure/serviceImpl/UserService');
 
 let userRepository = {} as any;
 let userService = new UserService(userRepository);
-let homeController = new HomeController(userService);
+let authController = new AuthController(userService);
 
 let req;
 let res;
@@ -41,7 +41,7 @@ describe('Testing home controller', () => {
         password: '12345'
       };
 
-      await homeController.register(req, res);
+      await authController.register(req, res);
 
       expect(res.redirect).toHaveBeenCalledWith('/rooms');
       expect(res.statusCode).toEqual(302);
@@ -54,7 +54,7 @@ describe('Testing home controller', () => {
         password: ''
       };
 
-      await homeController.register(req, res);
+      await authController.register(req, res);
 
       expect(res.statusCode).toEqual(400);
     });
@@ -66,7 +66,7 @@ describe('Testing home controller', () => {
         password: '12345'
       };
 
-      await homeController.register(req, res);
+      await authController.register(req, res);
 
       expect(res.statusCode).toEqual(400);
     });
@@ -78,7 +78,7 @@ describe('Testing home controller', () => {
         password: '12345'
       };
 
-      await homeController.register(req, res);
+      await authController.register(req, res);
 
       expect(res.statusCode).toEqual(400);
     });
@@ -99,7 +99,7 @@ describe('Testing home controller', () => {
         Promise.resolve(userFromBD)
       );
 
-      await homeController.login(req, res);
+      await authController.login(req, res);
 
       expect(userService.getUserByUsername).toBeCalledTimes(1);
       expect(res.redirect).toHaveBeenCalledWith('/rooms');
@@ -112,7 +112,7 @@ describe('Testing home controller', () => {
         password: '12345'
       };
 
-      await homeController.login(req, res);
+      await authController.login(req, res);
 
       expect(res.statusCode).toEqual(400);
     });
@@ -131,18 +131,10 @@ describe('Testing home controller', () => {
         Promise.resolve(userFromBD)
       );
 
-      await homeController.login(req, res);
+      await authController.login(req, res);
 
       expect(userService.getUserByUsername).toBeCalledTimes(1);
       expect(res.statusCode).toEqual(400);
-    });
-  });
-
-  describe('Rooms page', () => {
-    it('Rendering rooms page', async () => {
-      await homeController.getRoomsPage(req, res);
-
-      expect(res.statusCode).toEqual(200);
     });
   });
 });

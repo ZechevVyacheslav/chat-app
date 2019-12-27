@@ -5,7 +5,8 @@ const app: express.Application = express();
 import * as path from 'path';
 
 // Routes import
-import { router as homeRouter } from './routes/homeRouter';
+import { router as homeRouter } from './routes/authRouter';
+import roomRouter from './routes/roomRouter';
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +33,7 @@ app.use(
 
 // Routes usage
 app.use('/', homeRouter);
+app.use('/rooms', roomRouter);
 app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ message: 'Route not found' });
 });

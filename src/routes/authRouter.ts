@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { HomeController } from '../controllers/HomeController';
+import { AuthController } from '../controllers/AuthController';
 const router: express.Router = express.Router();
 import { connection } from '../models/infrastructure/connection/Connection';
 import isAuth from '../middlewares/is-auth';
@@ -11,11 +11,12 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 (async () => {
   const userRepository = (await connection).getCustomRepository(UserRepository);
   const userService: UserService = new UserService(userRepository);
-  const homeController: HomeController = new HomeController(userService);
+  const homeController: AuthController = new AuthController(userService);
 
   router.post('/login', homeController.login);
   router.post('/register', homeController.register);
-  router.get('/rooms', isAuth, homeController.getRoomsPage);
+  // router.get('/rooms', isAuth, homeController.getRoomsPage);
+  
 })();
 
 export { router };

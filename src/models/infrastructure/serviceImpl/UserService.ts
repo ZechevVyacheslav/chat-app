@@ -23,4 +23,9 @@ export class UserService implements IUserService {
   getUserByUsername(username: string) {
     return this.userRepository.findUserByUsername(username);
   }
+
+  getUserByEmail(email: string) {
+    return this.userRepository.findUserByEmail(email);
+  }
+  
 }

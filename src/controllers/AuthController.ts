@@ -3,11 +3,8 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 import { User } from 'models/domain/core/User';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-interface IUserRequest extends express.Request {
-  userId: number;
-}
 
-export class HomeController {
+export class AuthController {
   private userService: UserService;
 
   constructor(userService: UserService) {
@@ -35,6 +32,17 @@ export class HomeController {
         .json({ message: 'Password too short or not included' });
     }
 
+    const existingUserWithEmail = await this.userService.getUserByEmail(email);
+    const existingUserWithUserName = await this.userService.getUserByUsername(
+      username
+    );
+
+    if (existingUserWithEmail || existingUserWithUserName) {
+      return res
+        .status(409)
+        .json({ message: 'Email or username were alredy taken' });
+    }
+
     const user: User = await this.userService.registerUser(
       email,
       username,
@@ -47,17 +55,15 @@ export class HomeController {
       { expiresIn: '1h' }
     );
 
-    res
-      .status(201)
-      .json({
-        message: 'User created!',
-        user: {
-          userId: user.user_id,
-          email: user.email,
-          username: user.username
-        },
-        token
-      });
+    res.status(201).json({
+      message: 'User created!',
+      user: {
+        userId: user.user_id,
+        email: user.email,
+        username: user.username
+      },
+      token
+    });
   };
 
   login = async (req: express.Request, res: express.Response) => {
@@ -88,11 +94,14 @@ export class HomeController {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token, userId: user.user_id });
-  };
-
-  getRoomsPage = (req: IUserRequest, res: express.Response) => {
-    console.log(req.userId);
-    res.status(200).json({ message: 'Got all rooms' });
+    res.status(200).json({
+      message: 'User autherised!',
+      user: {
+        userId: user.user_id,
+        email: user.email,
+        username: user.username
+      },
+      token
+    });
   };
 }
