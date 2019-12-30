@@ -14,13 +14,13 @@ import RoomService from '../models/infrastructure/serviceImpl/RoomService';
   const roomRepository = esteblishedConnection.getCustomRepository(
     RoomRepository
   );
-  // const roomRepository = (await connection).getCustomRepository(RoomRepository);
   const roomService: RoomService = new RoomService(roomRepository);
   const roomController: RoomController = new RoomController(roomService);
 
+  router.get('/', isAuth, roomController.getRooms);
   router.post('/', isAuth, roomController.createRoom);
-  // router.post('/register', homeController.register);
-  // router.get('/rooms', isAuth, homeController.getRoomsPage);
+  router.delete('/', isAuth, roomController.deleteRoom);
+  router.put('/', isAuth, roomController.editRoom);
 })();
 
 export default router;

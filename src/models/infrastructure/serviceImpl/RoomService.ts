@@ -17,6 +17,20 @@ export default class RoomService implements IRoomService {
     return this.roomRepository.addRoom(room);
   }
 
+  findRoomById(roomId: number) {
+    return this.roomRepository.findRoomById(roomId);
+  }
+
+  editRoomTitle(title: string, roomId: number) {
+    const room = new Room();
+    room.title = title;
+    return this.roomRepository.updateRoomTitle(roomId, room);
+  }
+
+  deleteRoom(roomId: number) {
+    return this.roomRepository.deleteRoom(roomId);
+  }
+
   findUserRooms(creatorId: number) {
     return this.roomRepository.findRoomsByCreatorId(creatorId);
   }
