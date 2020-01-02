@@ -4,6 +4,7 @@ const router: express.Router = express.Router();
 import RoomController from '../controllers/RoomsController';
 import { connection } from '../models/infrastructure/connection/Connection';
 import isAuth from '../middlewares/is-auth';
+import { check } from 'express-validator';
 
 // Need DI implementation
 import RoomRepository from '../models/infrastructure/repository/RoomRepository';
@@ -18,9 +19,45 @@ import RoomService from '../models/infrastructure/serviceImpl/RoomService';
   const roomController: RoomController = new RoomController(roomService);
 
   router.get('/', isAuth, roomController.getRooms);
-  router.post('/', isAuth, roomController.createRoom);
-  router.delete('/', isAuth, roomController.deleteRoom);
-  router.put('/', isAuth, roomController.editRoom);
+  router.post(
+    '/',
+    isAuth,
+    [
+      check('title')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage("Title can't be empty")
+    ],
+    roomController.createRoom
+  );
+  router.delete(
+    '/',
+    isAuth,
+    [
+      check('roomId')
+        .trim()
+        .not()
+        .isEmpty()
+    ],
+    roomController.deleteRoom
+  );
+  router.put(
+    '/',
+    isAuth,
+    [
+      check('title')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage("Title can't be empty"),
+      check('roomId')
+        .trim()
+        .not()
+        .isEmpty()
+    ],
+    roomController.editRoom
+  );
 })();
 
 export default router;

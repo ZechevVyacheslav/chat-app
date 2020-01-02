@@ -1,6 +1,7 @@
 import IUserRequest from '../userModel/IUserRequest';
 import IRoomService from 'models/services/interfaces/IRoomService';
 import { Response } from 'express';
+import { validationResult } from 'express-validator';
 
 export default class RoomController {
   private roomService: IRoomService;
@@ -10,6 +11,11 @@ export default class RoomController {
   }
 
   createRoom = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const userId = req.userId;
     const { title } = req.body;
     const room = await this.roomService.createRoom(title, userId);
@@ -32,12 +38,17 @@ export default class RoomController {
   };
 
   deleteRoom = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const { roomId } = req.body;
 
     const room = await this.roomService.findRoomById(roomId);
     if (!room) {
       return res.status(404).json({
-        message: "Resource not found"
+        message: 'Room not found'
       });
     }
 
@@ -49,12 +60,17 @@ export default class RoomController {
   };
 
   editRoom = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const { title, roomId } = req.body;
 
     const room = await this.roomService.findRoomById(roomId);
     if (!room) {
       return res.status(404).json({
-        message: "Resource not found"
+        message: 'Room not found'
       });
     }
 
