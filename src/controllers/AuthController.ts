@@ -37,7 +37,7 @@ export class AuthController {
     );
 
     const token = jwt.sign(
-      { userId: user.user_id, email: user.email, username: user.username },
+      { userId: user.id, email: user.email, username: user.username },
       'supersecretprivatkey',
       { expiresIn: '1h' }
     );
@@ -45,7 +45,7 @@ export class AuthController {
     res.status(201).json({
       message: 'User created!',
       user: {
-        userId: user.user_id,
+        userId: user.id,
         email: user.email,
         username: user.username
       },
@@ -73,7 +73,7 @@ export class AuthController {
     }
 
     const token = jwt.sign(
-      { userId: user.user_id, email: user.email, username: user.username },
+      { userId: user.id, email: user.email, username: user.username },
       'supersecretprivatkey',
       { expiresIn: '1h' }
     );
@@ -81,7 +81,7 @@ export class AuthController {
     res.status(200).json({
       message: 'User autherised!',
       user: {
-        userId: user.user_id,
+        userId: user.id,
         email: user.email,
         username: user.username
       },

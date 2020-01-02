@@ -1,13 +1,18 @@
 import IUserRequest from '../userModel/IUserRequest';
 import IRoomService from 'models/services/interfaces/IRoomService';
+import IMessageService from 'models/services/interfaces/IMessageService';
+import { User } from '../models/domain/core/User';
+import Message from '../models/domain/core/Message';
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
 
 export default class RoomController {
   private roomService: IRoomService;
+  private messageService: IMessageService;
 
-  constructor(roomService: IRoomService) {
+  constructor(roomService: IRoomService, messageService: IMessageService) {
     this.roomService = roomService;
+    this.messageService = messageService;
   }
 
   createRoom = async (req: IUserRequest, res: Response) => {
@@ -78,6 +83,59 @@ export default class RoomController {
     res.status(200).json({
       message: 'Room was edited',
       room: updatedRoom
+    });
+  };
+
+  inviteUserToRoom = async (req: IUserRequest, res: Response) => {
+    const { roomId, userId } = req.params;
+    const user = new User();
+    user.id = +userId;
+
+    const room = this.roomService.inviteUserToRoom(user, +roomId);
+    res.status(200).json({
+      message: 'OK'
+    });
+  };
+
+  writeMessage = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const roomId: number = +req.params.roomId;
+    const room = await this.roomService.findRoomById(roomId);
+    if (!room) {
+      return res.status(404).json({
+        message: 'Room not found'
+      });
+    }
+
+    const { text } = req.body;
+    const userId = req.userId;
+    const user = new User();
+    user.id = userId;
+
+    const message = new Message();
+    message.room = room;
+    message.user = user;
+    message.text = text;
+    const addedMessage = await this.messageService.addMessage(message);
+
+    res.status(200).json({
+      message: 'Message was added',
+      msg: addedMessage
+    });
+  };
+
+  getRoomMessages = async (req: IUserRequest, res: Response) => {
+    // const userId = req.userId;
+    const roomId: number = +req.params.roomId;
+    const messages = await this.messageService.getMessagesByRoomId(roomId);
+
+    res.status(200).json({
+      message: 'Chat messages',
+      messages
     });
   };
 }

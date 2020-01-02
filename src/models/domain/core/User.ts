@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import Message from './Message';
 
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
-  public user_id: number;
+  public id: number;
 
   @Column()
   public username: string;
@@ -13,4 +14,10 @@ export class User {
 
   @Column()
   public email: string;
+
+  @OneToMany(
+    type => Message,
+    message => message.user
+  )
+  messages: Message[];
 }

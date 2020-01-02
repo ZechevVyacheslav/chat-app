@@ -1,6 +1,8 @@
 import { createConnection } from 'typeorm';
 import { User } from '../../domain/core/User';
-import Room from '../../domain/core/Room'
+import Room from '../../domain/core/Room';
+import Message from '../../domain/core/Message';
+import Role from '../../domain/core/Role';
 
 export const connection = createConnection({
   type: 'postgres',
@@ -9,7 +11,7 @@ export const connection = createConnection({
   username: 'postgres',
   password: 'password123',
   database: 'test',
-  entities: [User, Room],
+  entities: [User, Room, Message, Role],
   synchronize: true,
   logging: false
 });

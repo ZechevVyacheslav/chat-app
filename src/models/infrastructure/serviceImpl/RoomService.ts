@@ -1,6 +1,7 @@
 import IRoomService from '../../services/interfaces/IRoomService';
 import IRoomRepository from '../../domain/interfaces/IRoomRepository';
 import Room from '../../domain/core/Room';
+import { User } from '../../domain/core/User';
 
 export default class RoomService implements IRoomService {
   private roomRepository: IRoomRepository;
@@ -24,7 +25,7 @@ export default class RoomService implements IRoomService {
   editRoomTitle(title: string, roomId: number) {
     const room = new Room();
     room.title = title;
-    return this.roomRepository.updateRoomTitle(roomId, room);
+    return this.roomRepository.updateRoom(roomId, room);
   }
 
   deleteRoom(roomId: number) {
@@ -33,5 +34,9 @@ export default class RoomService implements IRoomService {
 
   findUserRooms(creatorId: number) {
     return this.roomRepository.findRoomsByCreatorId(creatorId);
+  }
+
+  inviteUserToRoom(user: User, roomId: number) {
+    return this.roomRepository.addUserToRoom(user, roomId);
   }
 }
