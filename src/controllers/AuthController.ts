@@ -3,6 +3,7 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 import { User } from 'models/domain/core/User';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { validationResult } from 'express-validator';
 
 export class AuthController {
   private userService: UserService;
@@ -12,26 +13,12 @@ export class AuthController {
   }
 
   register = async (req: express.Request, res: express.Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const { email, username, password } = req.body;
-
-    if ((email || '').length < 1) {
-      return res
-        .status(400)
-        .json({ message: 'E-mail too short or not included' });
-    }
-
-    if ((username || '').length < 1) {
-      return res
-        .status(400)
-        .json({ message: 'Username too short or not included' });
-    }
-
-    if ((password || '').length < 1) {
-      return res
-        .status(400)
-        .json({ message: 'Password too short or not included' });
-    }
-
     const existingUserWithEmail = await this.userService.getUserByEmail(email);
     const existingUserWithUserName = await this.userService.getUserByUsername(
       username
@@ -40,7 +27,7 @@ export class AuthController {
     if (existingUserWithEmail || existingUserWithUserName) {
       return res
         .status(409)
-        .json({ message: 'Email or username were alredy taken' });
+        .json({ message: 'Email or username were already taken' });
     }
 
     const user: User = await this.userService.registerUser(
@@ -67,21 +54,18 @@ export class AuthController {
   };
 
   login = async (req: express.Request, res: express.Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const { username, password } = req.body;
 
-    if ((username || '').length < 1) {
-      return res
-        .status(400)
-        .json({ message: 'Username too short or not included' });
-    }
-
-    if ((password || '').length < 1) {
-      return res
-        .status(400)
-        .json({ message: 'Password too short or not included' });
-    }
-
     const user = await this.userService.getUserByUsername(username);
+    if (!user) {
+      return res.status(401).json({ message: 'Wrong username!' });
+    }
+
     const isEqual = await bcrypt.compare(password, user.password);
 
     if (!isEqual) {

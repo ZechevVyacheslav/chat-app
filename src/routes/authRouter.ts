@@ -2,6 +2,7 @@ import * as express from 'express';
 import { AuthController } from '../controllers/AuthController';
 const router: express.Router = express.Router();
 import { connection } from '../models/infrastructure/connection/Connection';
+import { check } from 'express-validator';
 
 // Need DI implementation
 import { UserRepository } from '../models/infrastructure/repository/UserRepository';
@@ -14,7 +15,7 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
 
   /**
    * @swagger
-   * 
+   *
    *  /user/login:
    *    post:
    *      summary: Returns a list of users.
@@ -37,10 +38,39 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
    *      responses:
    *        200:
    *          description: login
-   *    
+   *
    */
-  router.post('/login', homeController.login);
-  router.post('/register', homeController.register);
+  router.post(
+    '/login',
+    [
+      check('username')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid username.'),
+      check('password')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid password.')
+    ],
+    homeController.login
+  );
+  router.post(
+    '/register',
+    [
+      check('email')
+        .isEmail()
+        .withMessage('Please enter a valid email.'),
+      check('username')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid username.'),
+      check('password')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid password.')
+    ],
+    homeController.register
+  );
 })();
 
 export { router };

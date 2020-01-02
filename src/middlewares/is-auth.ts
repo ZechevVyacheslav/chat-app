@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import * as express from 'express'
-import IUserRequest from './IUserRequest'
+import IUserRequest from '../userModel/IUserRequest'
 
 export default (req: IUserRequest, res: express.Response, next: express.NextFunction) => {
     const authHeader = req.get("Authorization");

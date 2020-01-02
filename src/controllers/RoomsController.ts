@@ -1,4 +1,4 @@
-import IUserRequest from '../middlewares/IUserRequest';
+import IUserRequest from '../userModel/IUserRequest';
 import IRoomService from 'models/services/interfaces/IRoomService';
 import { Response } from 'express';
 
