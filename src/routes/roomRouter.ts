@@ -13,11 +13,11 @@ import MessageRepository from '../models/infrastructure/repository/MessageReposi
 import MessageService from '../models/infrastructure/serviceImpl/MessageService';
 
 (async () => {
-  const esteblishedConnection = await connection;
-  const roomRepository = esteblishedConnection.getCustomRepository(
+  const establishedConnection = await connection;
+  const roomRepository = establishedConnection.getCustomRepository(
     RoomRepository
   );
-  const messageRepository = esteblishedConnection.getCustomRepository(
+  const messageRepository = establishedConnection.getCustomRepository(
     MessageRepository
   );
   const roomService: RoomService = new RoomService(roomRepository);

@@ -1,4 +1,4 @@
-import IMessageService from '../../services/interfaces//IMessageService';
+import IMessageService from '../../services/interfaces/IMessageService';
 import IMessageRepository from '../../domain/interfaces/IMessageRepository';
 import Message from '../../domain/core/Message';
 // import { User } from '../../domain/core/User';

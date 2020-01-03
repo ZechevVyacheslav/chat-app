@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 import Message from './Message';
+import Role from './Role';
 
 @Entity('user')
 export class User {
@@ -20,4 +21,10 @@ export class User {
     message => message.user
   )
   messages: Message[];
+
+  @ManyToOne(
+    type => Role,
+    role => role.users
+  )
+  role: Role;
 }

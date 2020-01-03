@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
-  ManyToOne
+  OneToMany
 } from 'typeorm';
 import { User } from './User';
 
@@ -16,6 +16,9 @@ export default class Role {
   @Column()
   public title: string;
 
-  @ManyToOne(type => User)
+  @OneToMany(
+    type => User,
+    user => user.role
+  )
   public users: User[];
 }
