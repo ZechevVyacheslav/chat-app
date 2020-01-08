@@ -1,15 +1,19 @@
 import * as express from 'express';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
-import { User } from 'models/domain/core/User';
+import RoleService from '../models/infrastructure/serviceImpl/RoleService';
+import { User } from '../models/domain/core/User';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
+import Role from '../models/domain/core/Role';
 
 export class AuthController {
   private userService: UserService;
+  private roleService: RoleService;
 
-  constructor(userService: UserService) {
+  constructor(userService: UserService, roleService: RoleService) {
     this.userService = userService;
+    this.roleService = roleService;
   }
 
   register = async (req: express.Request, res: express.Response) => {
@@ -19,6 +23,7 @@ export class AuthController {
     }
 
     const { email, username, password } = req.body;
+    const role: Role = await this.roleService.findRoleByTitle('User');
     const existingUserWithEmail = await this.userService.getUserByEmail(email);
     const existingUserWithUserName = await this.userService.getUserByUsername(
       username
@@ -33,11 +38,17 @@ export class AuthController {
     const user: User = await this.userService.registerUser(
       email,
       username,
-      password
+      password,
+      role
     );
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        roleTitle: role.title
+      },
       'supersecretprivatkey',
       { expiresIn: '1h' }
     );
@@ -61,7 +72,7 @@ export class AuthController {
 
     const { username, password } = req.body;
 
-    const user = await this.userService.getUserByUsername(username);
+    const user: User = await this.userService.getUserByUsername(username);
     if (!user) {
       return res.status(401).json({ message: 'Wrong username!' });
     }
@@ -73,7 +84,12 @@ export class AuthController {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        roleTitle: user.role.title
+      },
       'supersecretprivatkey',
       { expiresIn: '1h' }
     );
@@ -83,7 +99,8 @@ export class AuthController {
       user: {
         userId: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        roleTitle: user.role.title
       },
       token
     });

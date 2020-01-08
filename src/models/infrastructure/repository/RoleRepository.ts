@@ -10,17 +10,14 @@ export default class RoleRepository extends Repository<Role>
     return this.save(role);
   }
 
+  findRoleByTitle(title: string) {
+    return this.findOne({where: {title}});
+  }
+
   assignRoleToUser(role: Role, user: User) {
     return this.findOne(role.id, {relations: ['users']}).then(role => {
       role.users = [...role.users, user];
       return this.save(role);
     })
-    // return this.find({ where: { id: role.id }, relations: ['users'] }).then(
-    //   roles => {
-    //     const role: Role = roles[0];
-    //     role.users = [...role.users, user];
-    //     return this.save(role);
-    //   }
-    // );
   }
 }

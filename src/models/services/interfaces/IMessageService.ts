@@ -1,7 +1,9 @@
 import Message from '../../domain/core/Message';
-// import { User } from '../../domain/core/User';
 
 export default interface IMessageService {
-    addMessage(message: Message): Promise<Message>;
-    getMessagesByRoomId(roomId: number): Promise<Message[]>;
+  addMessage(message: Message): Promise<Message>;
+  getMessageById(messageId: number): Promise<Message>;
+  getMessagesByRoomId(roomId: number): Promise<Message[]>;
+  updateMessage(messageId: number, updatedMessage: Message): Promise<Message>;
+  deleteMessage(messageId: number): Promise<Message>;
 }

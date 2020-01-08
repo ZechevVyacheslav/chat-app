@@ -9,15 +9,17 @@ export class UserRepository extends Repository<User>
     return this.findOne({ where: { email } });
   }
 
-  findUserById() {
-    return new User(); // TODO
+  findUserById(id: number) {
+    return this.findOne(id, { relations: ['role'] });
   }
 
   findUserByUsername(username: string) {
-    return this.findOne({ where: { username } }).then(result => {
-      // console.log(result);
-      return result;
-    });
+    return this.findOne({ where: { username }, relations: ['role'] }).then(
+      result => {
+        // console.log(result);
+        return result;
+      }
+    );
   }
 
   addUser(user: User) {

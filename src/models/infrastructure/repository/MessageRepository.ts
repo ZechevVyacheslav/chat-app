@@ -9,6 +9,10 @@ export default class MessageRepositroy extends Repository<Message>
     return this.save(message);
   }
 
+  getMessageById(messageId: number) {
+    return this.findOne(messageId);
+  }
+
   getMessagesByRoomId(roomId: number) {
     return this.find({ relations: ['room'] }).then(messages => {
       return messages.filter(message => message.room.id === roomId);

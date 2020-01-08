@@ -23,5 +23,6 @@ export default (req: IUserRequest, res: express.Response, next: express.NextFunc
         throw error;
     }
     req.userId = decodedToken.userId;
+    req.roleTitle = decodedToken.roleTitle;
     next();
 }

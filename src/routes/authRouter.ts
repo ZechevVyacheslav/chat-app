@@ -7,11 +7,15 @@ import { check } from 'express-validator';
 // Need DI implementation
 import { UserRepository } from '../models/infrastructure/repository/UserRepository';
 import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import RoleRepository from '../models/infrastructure/repository/RoleRepository';
+import RoleService from '../models/infrastructure/serviceImpl/RoleService';
 
 (async () => {
-  const userRepository = (await connection).getCustomRepository(UserRepository);
+  const userRepository: UserRepository = (await connection).getCustomRepository(UserRepository);
+  const roleRepository: RoleRepository = (await connection).getCustomRepository(RoleRepository);
   const userService: UserService = new UserService(userRepository);
-  const homeController: AuthController = new AuthController(userService);
+  const roleService: RoleService = new RoleService(roleRepository);
+  const homeController: AuthController = new AuthController(userService, roleService);
 
   /**
    * @swagger

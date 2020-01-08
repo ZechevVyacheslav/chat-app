@@ -14,6 +14,10 @@ export default class RoleService implements IRoleService {
     return this.roleRepository.addRole(role);
   }
 
+  findRoleByTitle(title: string) {
+    return this.roleRepository.findRoleByTitle(title);
+  }
+
   assignRoleToUser(role: Role, user: User) {
     return this.roleRepository.assignRoleToUser(role, user);
   }

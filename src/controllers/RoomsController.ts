@@ -1,10 +1,11 @@
 import IUserRequest from '../userModel/IUserRequest';
-import IRoomService from 'models/services/interfaces/IRoomService';
-import IMessageService from 'models/services/interfaces/IMessageService';
+import IRoomService from '../models/services/interfaces/IRoomService';
+import IMessageService from '../models/services/interfaces/IMessageService';
 import { User } from '../models/domain/core/User';
 import Message from '../models/domain/core/Message';
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
+import Room from '../models/domain/core/Room';
 
 export default class RoomController {
   private roomService: IRoomService;
@@ -116,11 +117,11 @@ export default class RoomController {
     const user = new User();
     user.id = userId;
 
-    const message = new Message();
+    const message: Message = new Message();
     message.room = room;
     message.user = user;
     message.text = text;
-    const addedMessage = await this.messageService.addMessage(message);
+    const addedMessage: Message = await this.messageService.addMessage(message);
 
     res.status(200).json({
       message: 'Message was added',
@@ -128,16 +129,66 @@ export default class RoomController {
     });
   };
 
+  updateMessage = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const roomId: number = +req.params.roomId;
+    const room: Room = await this.roomService.findRoomById(roomId);
+    if (!room) {
+      return res.status(404).json({
+        message: 'Room not found'
+      });
+    }
+
+    const { messageId, text } = req.body;
+    const userId = req.userId;
+
+    const message: Message = await this.messageService.getMessageById(messageId);
+    message.text = text;
+    const updatedMessage: Message = await this.messageService.updateMessage(messageId, message);
+
+    res.status(200).json({
+      message: 'Message was updated',
+      msg: updatedMessage
+    });
+  };
+
+  deleteMessage = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const roomId: number = +req.params.roomId;
+    const room: Room = await this.roomService.findRoomById(roomId);
+    if (!room) {
+      return res.status(404).json({
+        message: 'Room not found'
+      });
+    }
+
+    const { messageId } = req.body;
+    const userId = req.userId;
+
+    const deletedMessage: Message = await this.messageService.deleteMessage(messageId)
+
+    res.status(200).json({
+      message: 'Message was deleted',
+      msg: deletedMessage
+    });
+  };
+
   getRoomMessages = async (req: IUserRequest, res: Response) => {
     // const userId = req.userId;
     const roomId: number = +req.params.roomId;
-    const messages = await this.messageService.getMessagesByRoomId(roomId);
+    const messages: Message[] = await this.messageService.getMessagesByRoomId(roomId);
 
     res.status(200).json({
       message: 'Chat messages',
       messages
     });
   };
-
-
 }

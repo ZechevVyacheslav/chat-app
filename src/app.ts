@@ -3,12 +3,12 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 const app: express.Application = express();
 import * as path from 'path';
-import * as swaggerUI from 'swagger-ui-express'
+import * as swaggerUI from 'swagger-ui-express';
 
 // Routes import
 import { router as authRouter } from './routes/authRouter';
 import roomRouter from './routes/roomRouter';
-import adminRouter from "routes/adminRouter";
+import adminRouter from './routes/adminRouter';
 import swaggerDoc from './swaggerDoc';
 
 // View engine
@@ -37,8 +37,8 @@ app.use(
 // Routes usage
 app.use('/user', authRouter);
 app.use('/rooms', roomRouter);
-app.use('/admin', adminRouter)
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))
+app.use('/admin', adminRouter);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ message: 'Route not found' });
 });

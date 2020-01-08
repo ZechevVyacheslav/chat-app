@@ -1,7 +1,6 @@
 import IMessageService from '../../services/interfaces/IMessageService';
 import IMessageRepository from '../../domain/interfaces/IMessageRepository';
 import Message from '../../domain/core/Message';
-// import { User } from '../../domain/core/User';
 
 export default class MessageService implements IMessageService {
   private messageRepository: IMessageRepository;
@@ -14,7 +13,19 @@ export default class MessageService implements IMessageService {
     return this.messageRepository.addMessage(message);
   }
 
+  getMessageById(messageId: number) {
+    return this.messageRepository.getMessageById(messageId);
+  }
+
   getMessagesByRoomId(roomId: number) {
     return this.messageRepository.getMessagesByRoomId(roomId);
+  }
+
+  updateMessage(messageId: number, updatedMessage: Message) {
+    return this.messageRepository.updateMessage(messageId, updatedMessage);
+  }
+
+  deleteMessage(messageId: number) {
+    return this.messageRepository.deleteMessage(messageId);
   }
 }

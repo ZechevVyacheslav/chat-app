@@ -4,6 +4,8 @@ const router: express.Router = express.Router();
 import RoomController from '../controllers/RoomsController';
 import { connection } from '../models/infrastructure/connection/Connection';
 import isAuth from '../middlewares/is-auth';
+import isAdmin from '../middlewares/isAdmin';
+import isAdminOrModerator from '../middlewares/isAdminOrModerator';
 import { check } from 'express-validator';
 
 // Need DI implementation
@@ -38,6 +40,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
         .isEmpty()
         .withMessage("Title can't be empty")
     ],
+    isAdmin,
     roomController.createRoom
   );
   router.delete(
@@ -49,6 +52,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
         .not()
         .isEmpty()
     ],
+    isAdmin,
     roomController.deleteRoom
   );
   router.put(
@@ -65,16 +69,42 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
         .not()
         .isEmpty()
     ],
+    isAdmin,
     roomController.editRoom
   );
   router.get('/:roomId/chat', isAuth, roomController.getRoomMessages);
-  router.post('/:roomId/chat', isAuth, [
-    check('text')
-      .trim()
-      .not()
-      .isEmpty()
-      .withMessage("Message can't be empty")
-  ], roomController.writeMessage);
+  router.post(
+    '/:roomId/chat',
+    isAuth,
+    [
+      check('text')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage("Message can't be empty")
+    ],
+    roomController.writeMessage
+  );
+  router.put(
+    '/:roomId/chat',
+    isAuth,
+    [
+      check('text')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage("Message can't be empty")
+    ],
+    isAdminOrModerator,
+    roomController.updateMessage
+  );
+  router.delete(
+    '/:roomId/chat',
+    isAuth,
+    isAdminOrModerator,
+    roomController.deleteMessage
+  );
+
   router.post(
     '/:roomId/invite/:userId',
     isAuth,
