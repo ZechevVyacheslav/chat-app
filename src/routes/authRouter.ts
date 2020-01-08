@@ -11,53 +11,54 @@ import RoleRepository from '../models/infrastructure/repository/RoleRepository';
 import RoleService from '../models/infrastructure/serviceImpl/RoleService';
 
 (async () => {
-  const userRepository: UserRepository = (await connection).getCustomRepository(UserRepository);
-  const roleRepository: RoleRepository = (await connection).getCustomRepository(RoleRepository);
+  const userRepository: UserRepository = (await connection).getCustomRepository(
+    UserRepository
+  );
+  const roleRepository: RoleRepository = (await connection).getCustomRepository(
+    RoleRepository
+  );
   const userService: UserService = new UserService(userRepository);
   const roleService: RoleService = new RoleService(roleRepository);
-  const homeController: AuthController = new AuthController(userService, roleService);
+  const homeController: AuthController = new AuthController(
+    userService,
+    roleService
+  );
 
   /**
    * @swagger
    *
-   *  /user/login:
+   *  /user/register:
    *    post:
-   *      summary: Returns a list of users.
-   *      description: This should login user
+   *      summary: Returns a user info and token
+   *      description: This should register new user
    *      tags:
-   *        - Users
+   *        - User
    *      produces:
    *        - application/json
    *      parameters:
+   *        - name: email
+   *          description: Email to use for registration
+   *          in: form
+   *          required: true
+   *          type: string
    *        - name: username
-   *          description: Username to use for login.
+   *          description: Username to use for registration
    *          in: form
    *          required: true
    *          type: string
    *        - name: password
-   *          description: User's password.
+   *          description: Password to use for registration.
    *          in: form
    *          required: true
    *          type: string
    *      responses:
-   *        200:
-   *          description: login
-   *
+   *        201:
+   *          description: User registered
+   *        409:
+   *          description: Email or username were already taken
+   *        422:
+   *          description: Invalid body parameters
    */
-  router.post(
-    '/login',
-    [
-      check('username')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid username.'),
-      check('password')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid password.')
-    ],
-    homeController.login
-  );
   router.post(
     '/register',
     [
@@ -74,6 +75,50 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
         .withMessage('Please enter a valid password.')
     ],
     homeController.register
+  );
+
+  /**
+   * @swagger
+   *
+   *  /user/login:
+   *    post:
+   *      summary: Returns a user info and token
+   *      tags:
+   *        - User
+   *      produces:
+   *        - application/json
+   *      parameters:
+   *        - name: username
+   *          description: Username to use for login.
+   *          in: form
+   *          required: true
+   *          type: string
+   *        - name: password
+   *          description: Password to use for login.
+   *          in: form
+   *          required: true
+   *          type: string
+   *      responses:
+   *        200:
+   *          description: User loged in
+   *        401:
+   *          description: Parameters were valid but not found in database
+   *        422:
+   *          description: Invalid body parameters
+   */
+  router.post(
+    '/login',
+    [
+      check('username')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid username.'),
+      check('password')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid password.')
+    ],
+    homeController.login
   );
 })();
 

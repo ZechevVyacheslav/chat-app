@@ -7,10 +7,27 @@ const options = {
       title: 'Chat app',
       version: '1.0.0'
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
     tags: [
       {
-        name: 'Users',
+        name: 'User',
         description: 'Everything about user auth'
+      },
+      {
+        name: 'Admin',
+        description: 'Everything about administraining'
+      },
+      {
+        name: 'Room',
+        description: 'Everything about rooms and messages'
       }
     ]
   },

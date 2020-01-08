@@ -21,12 +21,34 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
     UserRepository
   );
   const userService: UserService = new UserService(userRepository);
-  const adminController: AdminController = new AdminController(roleService, userService);
+  const adminController: AdminController = new AdminController(
+    roleService,
+    userService
+  );
 
   // // Get all roles
   // router.get('/roles')
 
-  // Create role
+  /**
+   * @swagger
+   *
+   *  /admin/roles:
+   *    post:
+   *      summary: Returns a new role
+   *      tags:
+   *        - Admin
+   *      produces:
+   *        - application/json
+   *      parameters:
+   *        - name: title
+   *          description: Title of the new role
+   *          in: form
+   *          required: true
+   *          type: string
+   *      responses:
+   *        201:
+   *          description: Role was created
+   */
   router.post('/roles', adminController.createRole);
 
   // Get users list
@@ -35,10 +57,70 @@ import { UserService } from '../models/infrastructure/serviceImpl/UserService';
   // Info about 1 user
   router.get('/users/:userId');
 
-  // Change user role 
+  /**
+   * @swagger
+   *
+   *  /admin/users/{userId}/user:
+   *    patch:
+   *      summary: Returns user with new role
+   *      tags:
+   *        - Admin
+   *      produces:
+   *        - application/json
+   *      parameters:
+   *        - name: userId
+   *          description: Id of user to change
+   *          in: path
+   *          required: true
+   *          type: string
+   *      responses:
+   *        201:
+   *          description: User role granted
+   */
   router.patch('/users/:userId/user', adminController.assignUserRole);
 
-  // Change admin role
+  /**
+   * @swagger
+   *
+   *  /admin/users/{userId}/moderator:
+   *    patch:
+   *      summary: Returns user with new role
+   *      tags:
+   *        - Admin
+   *      produces:
+   *        - application/json
+   *      parameters:
+   *        - name: userId
+   *          description: Id of user to change
+   *          in: path
+   *          required: true
+   *          type: string
+   *      responses:
+   *        201:
+   *          description: Moderator role granted
+   */
+  router.patch('/users/:userId/moderator', adminController.assignModeratorRole);
+
+  /**
+   * @swagger
+   *
+   *  /admin/users/{userId}/admin:
+   *    patch:
+   *      summary: Returns user with new role
+   *      tags:
+   *        - Admin
+   *      produces:
+   *        - application/json
+   *      parameters:
+   *        - name: userId
+   *          description: Id of user to change
+   *          in: path
+   *          required: true
+   *          type: string
+   *      responses:
+   *        201:
+   *          description: Admin role granted
+   */
   router.patch('/users/:userId/admin', adminController.assignAdminRole);
 })();
 
