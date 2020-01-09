@@ -1,5 +1,5 @@
 import { createConnection } from 'typeorm';
-import { User } from '../../domain/core/User';
+import User from '../../domain/core/User';
 import Room from '../../domain/core/Room';
 import Message from '../../domain/core/Message';
 import Role from '../../domain/core/Role';
