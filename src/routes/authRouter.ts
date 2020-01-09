@@ -102,7 +102,7 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
    *        200:
    *          description: User loged in
    *        401:
-   *          description: Parameters were valid but not found in database
+   *          description: Worng username or password
    *        422:
    *          description: Invalid body parameters
    */

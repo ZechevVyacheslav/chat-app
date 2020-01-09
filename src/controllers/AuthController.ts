@@ -1,31 +1,38 @@
-import * as express from 'express';
-import UserService from '../models/infrastructure/serviceImpl/UserService';
-import RoleService from '../models/infrastructure/serviceImpl/RoleService';
-import User from '../models/domain/core/User';
+import { Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
+
+import IUserService from '../models/services/interfaces/IUserService';
+import IRoleService from '../models/services/interfaces/IRoleService';
+import User from '../models/domain/core/User';
 import Role from '../models/domain/core/Role';
 
 export class AuthController {
-  private userService: UserService;
-  private roleService: RoleService;
+  private userService: IUserService;
+  private roleService: IRoleService;
 
-  constructor(userService: UserService, roleService: RoleService) {
+  constructor(userService: IUserService, roleService: IRoleService) {
     this.userService = userService;
     this.roleService = roleService;
   }
 
-  register = async (req: express.Request, res: express.Response) => {
+  register = async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { email, username, password } = req.body;
+    const {
+      email,
+      username,
+      password
+    }: { email: string; username: string; password: string } = req.body;
     const role: Role = await this.roleService.findRoleByTitle('User');
-    const existingUserWithEmail = await this.userService.getUserByEmail(email);
-    const existingUserWithUserName = await this.userService.getUserByUsername(
+    const existingUserWithEmail: User = await this.userService.getUserByEmail(
+      email
+    );
+    const existingUserWithUserName: User = await this.userService.getUserByUsername(
       username
     );
 
@@ -42,7 +49,7 @@ export class AuthController {
       role
     );
 
-    const token = jwt.sign(
+    const token: string = jwt.sign(
       {
         userId: user.id,
         email: user.email,
@@ -50,7 +57,7 @@ export class AuthController {
         roleTitle: role.title
       },
       'supersecretprivatkey',
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     );
 
     res.status(201).json({
@@ -58,32 +65,36 @@ export class AuthController {
       user: {
         userId: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        role: role.title
       },
       token
     });
   };
 
-  login = async (req: express.Request, res: express.Response) => {
+  login = async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { username, password } = req.body;
+    const {
+      username,
+      password
+    }: { username: string; password: string } = req.body;
 
     const user: User = await this.userService.getUserByUsername(username);
     if (!user) {
       return res.status(401).json({ message: 'Wrong username!' });
     }
 
-    const isEqual = await bcrypt.compare(password, user.password);
+    const isEqual: boolean = await bcrypt.compare(password, user.password);
 
     if (!isEqual) {
       return res.status(401).json({ message: 'Wrong password!' });
     }
 
-    const token = jwt.sign(
+    const token: string = jwt.sign(
       {
         userId: user.id,
         email: user.email,
@@ -91,7 +102,7 @@ export class AuthController {
         roleTitle: user.role.title
       },
       'supersecretprivatkey',
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     );
 
     res.status(200).json({
