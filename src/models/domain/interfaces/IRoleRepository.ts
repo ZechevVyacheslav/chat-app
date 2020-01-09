@@ -1,5 +1,5 @@
 import Role from '../core/Role';
-import { User } from '../core/User';
+import User from '../core/User';
 
 export default interface IRoleRepository {
   addRole(role: Role): Promise<Role>;

@@ -3,7 +3,7 @@ import Message from './Message';
 import Role from './Role';
 
 @Entity('user')
-export class User {
+export default class User {
   @PrimaryGeneratedColumn()
   public id: number;
 

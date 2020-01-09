@@ -6,7 +6,7 @@ import {
   JoinTable,
   OneToMany
 } from 'typeorm';
-import { User } from './User';
+import User from './User';
 import Message from './Message';
 
 @Entity('room')

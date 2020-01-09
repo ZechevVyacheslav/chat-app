@@ -8,8 +8,8 @@ import { connection } from '../models/infrastructure/connection/Connection';
 import RoleRepository from '../models/infrastructure/repository/RoleRepository';
 import RoleService from '../models/infrastructure/serviceImpl/RoleService';
 import AdminController from '../controllers/AdminController';
-import { UserRepository } from '../models/infrastructure/repository/UserRepository';
-import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import UserRepository from '../models/infrastructure/repository/UserRepository';
+import UserService from '../models/infrastructure/serviceImpl/UserService';
 
 (async () => {
   const establishedConnection = await connection;

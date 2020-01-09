@@ -2,11 +2,10 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn
+  ManyToOne
 } from 'typeorm';
 import Room from './Room';
-import { User } from './User';
+import User from './User';
 
 @Entity('message')
 export default class Message {

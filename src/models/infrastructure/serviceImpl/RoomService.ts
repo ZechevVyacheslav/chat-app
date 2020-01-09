@@ -1,7 +1,7 @@
 import IRoomService from '../../services/interfaces/IRoomService';
 import IRoomRepository from '../../domain/interfaces/IRoomRepository';
 import Room from '../../domain/core/Room';
-import { User } from '../../domain/core/User';
+import User from '../../domain/core/User';
 
 export default class RoomService implements IRoomService {
   private roomRepository: IRoomRepository;

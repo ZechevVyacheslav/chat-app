@@ -1,9 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { IUserRepository } from '../../domain/interfaces/IUserRepository';
-import { User } from '../../domain/core/User';
+import IUserRepository from '../../domain/interfaces/IUserRepository';
+import User from '../../domain/core/User';
 
 @EntityRepository(User)
-export class UserRepository extends Repository<User>
+export default class UserRepository extends Repository<User>
   implements IUserRepository {
   findUserByEmail(email: string) {
     return this.findOne({ where: { email } });

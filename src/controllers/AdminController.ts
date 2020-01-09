@@ -3,8 +3,8 @@ import { Response } from 'express';
 
 import Role from '../models/domain/core/Role';
 import IRoleService from '../models/services/interfaces/IRoleService';
-import { User } from '../models/domain/core/User';
-import { IUserService } from '../models/services/interfaces/IUserService';
+import User from '../models/domain/core/User';
+import IUserService from '../models/services/interfaces/IUserService';
 
 export default class AdminController {
   private roleService: IRoleService;
@@ -33,7 +33,9 @@ export default class AdminController {
     const updatedUser: User = await this.userService.getUserById(userId);
     delete updatedUser.password;
 
-    return res.status(201).json({ message: 'User role granted', user: updatedUser });
+    return res
+      .status(201)
+      .json({ message: 'User role granted', user: updatedUser });
   };
 
   assignModeratorRole = async (req: IUserRequest, res: Response) => {
@@ -44,7 +46,9 @@ export default class AdminController {
     const updatedUser: User = await this.userService.getUserById(userId);
     delete updatedUser.password;
 
-    return res.status(201).json({ message: 'Moderator role granted', user: updatedUser });
+    return res
+      .status(201)
+      .json({ message: 'Moderator role granted', user: updatedUser });
   };
 
   assignAdminRole = async (req: IUserRequest, res: Response) => {
@@ -55,6 +59,8 @@ export default class AdminController {
     const updatedUser: User = await this.userService.getUserById(userId);
     delete updatedUser.password;
 
-    return res.status(201).json({ message: 'Admin role granted', user: updatedUser });
+    return res
+      .status(201)
+      .json({ message: 'Admin role granted', user: updatedUser });
   };
 }

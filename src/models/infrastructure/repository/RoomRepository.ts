@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { EntityRepository, Repository } from 'typeorm';
 import IRoomRepository from '../../domain/interfaces/IRoomRepository';
 import Room from '../../domain/core/Room';
-import { User } from '../../domain/core/User';
+import User from '../../domain/core/User';
 
 @EntityRepository(Room)
 export default class RoomRepositroy extends Repository<Room>
@@ -31,10 +31,12 @@ export default class RoomRepositroy extends Repository<Room>
   }
 
   addUserToRoom(user: User, roomId: number) {
-    return this.find({where: {id: roomId}, relations: ["members"]}).then(rooms => {
-      const room = rooms[0];
-      room.members = [...room.members, user]
-      return this.save(room);
-    });
+    return this.find({ where: { id: roomId }, relations: ['members'] }).then(
+      rooms => {
+        const room = rooms[0];
+        room.members = [...room.members, user];
+        return this.save(room);
+      }
+    );
   }
 }

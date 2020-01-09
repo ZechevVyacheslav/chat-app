@@ -5,8 +5,8 @@ import { connection } from '../models/infrastructure/connection/Connection';
 import { check } from 'express-validator';
 
 // Need DI implementation
-import { UserRepository } from '../models/infrastructure/repository/UserRepository';
-import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import UserRepository from '../models/infrastructure/repository/UserRepository';
+import UserService from '../models/infrastructure/serviceImpl/UserService';
 import RoleRepository from '../models/infrastructure/repository/RoleRepository';
 import RoleService from '../models/infrastructure/serviceImpl/RoleService';
 

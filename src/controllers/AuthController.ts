@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { UserService } from '../models/infrastructure/serviceImpl/UserService';
+import UserService from '../models/infrastructure/serviceImpl/UserService';
 import RoleService from '../models/infrastructure/serviceImpl/RoleService';
-import { User } from '../models/domain/core/User';
+import User from '../models/domain/core/User';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
