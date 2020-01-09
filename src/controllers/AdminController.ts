@@ -3,8 +3,8 @@ import { Response } from 'express';
 
 import Role from '../models/domain/core/Role';
 import IRoleService from '../models/services/interfaces/IRoleService';
-import User from '../models/domain/core/User';
 import IUserService from '../models/services/interfaces/IUserService';
+import User from '../models/domain/core/User';
 
 export default class AdminController {
   private roleService: IRoleService;
@@ -16,9 +16,10 @@ export default class AdminController {
   }
 
   createRole = async (req: IUserRequest, res: Response) => {
+    const { title }: { title: string } = req.body;
     const role: Role = new Role();
-    const { title } = req.body;
     role.title = title;
+
     const createdRole: Role = await this.roleService.addRole(role);
     return res
       .status(201)
@@ -26,7 +27,7 @@ export default class AdminController {
   };
 
   assignUserRole = async (req: IUserRequest, res: Response) => {
-    const userId: number = +req.params.userId;
+    const userId: number = Number(req.params.userId);
     const user: User = await this.userService.getUserById(userId);
     const userRole: Role = await this.roleService.findRoleByTitle('User');
     await this.roleService.assignRoleToUser(userRole, user);
@@ -39,7 +40,7 @@ export default class AdminController {
   };
 
   assignModeratorRole = async (req: IUserRequest, res: Response) => {
-    const userId: number = +req.params.userId;
+    const userId: number = Number(req.params.userId);
     const user: User = await this.userService.getUserById(userId);
     const moderRole: Role = await this.roleService.findRoleByTitle('User');
     await this.roleService.assignRoleToUser(moderRole, user);
@@ -52,7 +53,7 @@ export default class AdminController {
   };
 
   assignAdminRole = async (req: IUserRequest, res: Response) => {
-    const userId: number = +req.params.userId;
+    const userId: number = Number(req.params.userId);
     const user: User = await this.userService.getUserById(userId);
     const adminRole: Role = await this.roleService.findRoleByTitle('Admin');
     await this.roleService.assignRoleToUser(adminRole, user);

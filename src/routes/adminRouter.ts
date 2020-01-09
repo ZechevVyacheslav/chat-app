@@ -2,6 +2,9 @@ import { Router } from 'express';
 const router: Router = Router();
 
 import isAuth from '../middlewares/is-auth';
+import isAdmin from '../middlewares/isAdmin';
+import { check } from 'express-validator';
+import validate from '../middlewares/validate';
 
 import { connection } from '../models/infrastructure/connection/Connection';
 
@@ -49,7 +52,20 @@ import UserService from '../models/infrastructure/serviceImpl/UserService';
    *        201:
    *          description: Role was created
    */
-  router.post('/roles', adminController.createRole);
+  router.post(
+    '/roles',
+    validate([
+      check('title')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Please enter a valid role title.')
+        .exists()
+        .withMessage('Role title must be exist.')
+    ]),
+    isAuth,
+    isAdmin,
+    adminController.createRole
+  );
 
   // Get users list
   router.get('/users');

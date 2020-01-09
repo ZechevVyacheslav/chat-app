@@ -1,13 +1,12 @@
-// import * as express from 'express';
 import * as bcrypt from 'bcryptjs';
 import UserService from '../models/infrastructure/serviceImpl/UserService';
 import RoleService from '../models/infrastructure/serviceImpl/RoleService';
 import AuthController from './AuthController';
 import User from '../models/domain/core/User';
+import Role from '../models/domain/core/Role';
 jest.mock('../models/infrastructure/serviceImpl/UserService');
 jest.mock('../models/infrastructure/serviceImpl/RoleService');
 import { when } from 'jest-when';
-import Role from '../models/domain/core/Role';
 
 let userRepository = {} as any;
 let roleRepository = {} as any;
@@ -48,7 +47,6 @@ when(roleService.findRoleByTitle)
   .mockReturnValue(Promise.resolve(userRole));
 
 const regiseredUser = new User();
-// const regiseredUserPassword = '12345';
 regiseredUser.id = 1;
 regiseredUser.email = 'test@gmail.com';
 regiseredUser.username = 'Slava';
@@ -71,12 +69,6 @@ when(userService.getUserByUsername)
 when(userService.registerUser)
   .calledWith(newUser.email, newUser.username, newUser.password, userRole)
   .mockReturnValue(Promise.resolve(newUser));
-
-// beforeAll(async () => {
-//   const hashedPassword = await bcrypt.hash(regiseredUserPassword, 12);
-
-//   return regiseredUser;
-// });
 
 describe('Testing auth controller', () => {
   describe('Registration process', () => {
