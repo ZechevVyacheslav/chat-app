@@ -1,8 +1,9 @@
 import * as express from 'express';
-import { AuthController } from '../controllers/AuthController';
+import AuthController from '../controllers/AuthController';
 const router: express.Router = express.Router();
 import { connection } from '../models/infrastructure/connection/Connection';
 import { check } from 'express-validator';
+import validate from '../middlewares/validate';
 
 // Need DI implementation
 import UserRepository from '../models/infrastructure/repository/UserRepository';
@@ -61,10 +62,12 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
    */
   router.post(
     '/register',
-    [
+    validate([
       check('email')
         .isEmail()
-        .withMessage('Please enter a valid email.'),
+        .withMessage('Please enter a valid email.')
+        .exists()
+        .withMessage('Email must be exist.'),
       check('username')
         .trim()
         .isLength({ min: 5 })
@@ -73,7 +76,7 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
         .trim()
         .isLength({ min: 5 })
         .withMessage('Please enter a valid password.')
-    ],
+    ]),
     homeController.register
   );
 
@@ -108,7 +111,7 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
    */
   router.post(
     '/login',
-    [
+    validate([
       check('username')
         .trim()
         .isLength({ min: 5 })
@@ -117,7 +120,7 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
         .trim()
         .isLength({ min: 5 })
         .withMessage('Please enter a valid password.')
-    ],
+    ]),
     homeController.login
   );
 })();

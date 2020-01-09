@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { validationResult } from 'express-validator';
 
 import IUserService from '../models/services/interfaces/IUserService';
 import IRoleService from '../models/services/interfaces/IRoleService';
 import User from '../models/domain/core/User';
 import Role from '../models/domain/core/Role';
 
-export class AuthController {
+export default class AuthController {
   private userService: IUserService;
   private roleService: IRoleService;
 
@@ -18,11 +17,6 @@ export class AuthController {
   }
 
   register = async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
     const {
       email,
       username,
@@ -73,11 +67,6 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
     const {
       username,
       password

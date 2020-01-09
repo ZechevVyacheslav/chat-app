@@ -1,14 +1,19 @@
 // import * as express from 'express';
-// import { UserRepository } from '../models/infrastructure/repository/UserRepository';
-import { UserService } from '../models/infrastructure/serviceImpl/UserService';
-import { AuthController } from './AuthController';
-import { User } from '../models/domain/core/User';
-jest.mock('../models/infrastructure/repository/UserRepository');
+import * as bcrypt from 'bcryptjs';
+import UserService from '../models/infrastructure/serviceImpl/UserService';
+import RoleService from '../models/infrastructure/serviceImpl/RoleService';
+import AuthController from './AuthController';
+import User from '../models/domain/core/User';
 jest.mock('../models/infrastructure/serviceImpl/UserService');
+jest.mock('../models/infrastructure/serviceImpl/RoleService');
+import { when } from 'jest-when';
+import Role from '../models/domain/core/Role';
 
 let userRepository = {} as any;
-let userService = new UserService(userRepository);
-let authController = new AuthController(userService);
+let roleRepository = {} as any;
+let userService = new UserService(userRepository) as any;
+let roleService = new RoleService(roleRepository) as any;
+let authController = new AuthController(userService, roleService) as any;
 
 let req;
 let res;
@@ -18,123 +23,186 @@ beforeEach(() => {
     statusCode: 200,
     redirect: jest.fn().mockImplementation(path => {
       res.statusCode = 302;
-      return;
+      return res;
     }),
     status: jest.fn().mockImplementation(code => {
       res.statusCode = code;
-      return;
+      return res;
     }),
-    render: jest.fn()
+    json: jest.fn()
   } as any;
 
   req = {
     body: {}
   } as any;
+
+  jest.clearAllMocks();
 });
 
-describe('Testing home controller', () => {
+const userRole = new Role();
+userRole.id = 1;
+userRole.title = 'User';
+
+when(roleService.findRoleByTitle)
+  .calledWith('User')
+  .mockReturnValue(Promise.resolve(userRole));
+
+const regiseredUser = new User();
+// const regiseredUserPassword = '12345';
+regiseredUser.id = 1;
+regiseredUser.email = 'test@gmail.com';
+regiseredUser.username = 'Slava';
+regiseredUser.password = '12345';
+regiseredUser.role = userRole;
+
+const newUser = new User();
+newUser.email = 'test2@gmail.com';
+newUser.username = 'Vyacheslav';
+newUser.password = '654321';
+
+when(userService.getUserByEmail)
+  .calledWith(regiseredUser.email)
+  .mockReturnValue(Promise.resolve(regiseredUser));
+
+when(userService.getUserByUsername)
+  .calledWith(regiseredUser.username)
+  .mockReturnValue(Promise.resolve(regiseredUser));
+
+when(userService.registerUser)
+  .calledWith(newUser.email, newUser.username, newUser.password, userRole)
+  .mockReturnValue(Promise.resolve(newUser));
+
+// beforeAll(async () => {
+//   const hashedPassword = await bcrypt.hash(regiseredUserPassword, 12);
+
+//   return regiseredUser;
+// });
+
+describe('Testing auth controller', () => {
   describe('Registration process', () => {
-    it('Testing registration (with valid body)', async () => {
+    it('With new user', async () => {
       req.body = {
-        email: 'test@gmail.com',
-        username: 'Slava',
-        password: '12345'
+        email: newUser.email,
+        username: newUser.username,
+        password: newUser.password
       };
 
       await authController.register(req, res);
 
-      expect(res.redirect).toHaveBeenCalledWith('/rooms');
-      expect(res.statusCode).toEqual(302);
+      expect(roleService.findRoleByTitle).toHaveBeenCalledWith('User');
+      expect(userService.getUserByEmail).toHaveBeenCalledWith(req.body.email);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.registerUser).toBeCalledTimes(1);
+      expect(res.statusCode).toEqual(201);
     });
 
-    it('Testing registration (with invalid password)', async () => {
+    it('With exising email', async () => {
       req.body = {
-        email: 'test@gmail.com',
-        username: 'Slava',
-        password: ''
+        email: regiseredUser.email,
+        username: newUser.username,
+        password: newUser.password
       };
 
       await authController.register(req, res);
 
-      expect(res.statusCode).toEqual(400);
+      expect(userService.getUserByEmail).toHaveBeenCalledWith(req.body.email);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.registerUser).toBeCalledTimes(0);
+      expect(res.statusCode).toEqual(409);
     });
 
-    it('Testing registration (with invalid username)', async () => {
+    it('With exising username', async () => {
       req.body = {
-        email: 'test@gmail.com',
-        username: '',
-        password: '12345'
+        email: newUser.email,
+        username: regiseredUser.username,
+        password: newUser.password
       };
 
       await authController.register(req, res);
 
-      expect(res.statusCode).toEqual(400);
+      expect(userService.getUserByEmail).toHaveBeenCalledWith(req.body.email);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.registerUser).toBeCalledTimes(0);
+      expect(res.statusCode).toEqual(409);
     });
 
-    it('Testing registration (with invalid email)', async () => {
+    it('With exising email and username', async () => {
       req.body = {
-        email: '',
-        username: 'Slava',
-        password: '12345'
+        email: regiseredUser.email,
+        username: regiseredUser.username,
+        password: newUser.password
       };
 
       await authController.register(req, res);
 
-      expect(res.statusCode).toEqual(400);
+      expect(userService.getUserByEmail).toHaveBeenCalledWith(req.body.email);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.registerUser).toBeCalledTimes(0);
+      expect(res.statusCode).toEqual(409);
     });
   });
 
   describe('Login process', () => {
-    it('Testing login (with valid body)', async () => {
+    it('With valid fields', async () => {
       req.body = {
-        username: 'Slava',
-        password: '12345'
+        username: regiseredUser.username,
+        password: regiseredUser.password
       };
 
-      const userFromBD = new User();
-      userFromBD.username = 'Slava';
-      userFromBD.password = '12345';
-      
-      userService.getUserByUsername = jest.fn((username: string) =>
-        Promise.resolve(userFromBD)
-      );
+      const hashedPassword = await bcrypt.hash(regiseredUser.password, 12);
+      regiseredUser.password = hashedPassword;
 
       await authController.login(req, res);
 
-      expect(userService.getUserByUsername).toBeCalledTimes(1);
-      expect(res.redirect).toHaveBeenCalledWith('/rooms');
-      expect(res.statusCode).toEqual(302);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.getUserByUsername).toReturn();
+      expect(res.statusCode).toEqual(200);
     });
 
-    it('Testing login (with invalid username)', async () => {
+    it('With not existing username', async () => {
       req.body = {
-        username: '',
-        password: '12345'
+        username: 'Random',
+        password: regiseredUser.password
       };
+
+      const hashedPassword = await bcrypt.hash(regiseredUser.password, 12);
+      regiseredUser.password = hashedPassword;
 
       await authController.login(req, res);
 
-      expect(res.statusCode).toEqual(400);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.getUserByUsername).toReturn();
+      expect(res.statusCode).toEqual(401);
     });
 
-    it('Testing login (with invalid password)', async () => {
+    it('With invalid password', async () => {
       req.body = {
-        username: 'Slava',
-        password: '12'
+        username: regiseredUser.username,
+        password: 'Random'
       };
 
-      const userFromBD = new User();
-      userFromBD.username = 'Slava';
-      userFromBD.password = 'password';
-      
-      userService.getUserByUsername = jest.fn((username: string) =>
-        Promise.resolve(userFromBD)
-      );
+      const hashedPassword = await bcrypt.hash(regiseredUser.password, 12);
+      regiseredUser.password = hashedPassword;
 
       await authController.login(req, res);
 
-      expect(userService.getUserByUsername).toBeCalledTimes(1);
-      expect(res.statusCode).toEqual(400);
+      expect(userService.getUserByUsername).toHaveBeenCalledWith(
+        req.body.username
+      );
+      expect(userService.getUserByUsername).toReturn();
+      expect(res.statusCode).toEqual(401);
     });
   });
 });
