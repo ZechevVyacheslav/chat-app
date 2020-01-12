@@ -8,7 +8,7 @@ export default (
 ) => {
   const roleTitle: string = req.roleTitle;
   if (roleTitle === 'Admin') {
-    next();
+    return next();
   }
   const error = new Error('Access Denined');
   res.statusCode = 403;
