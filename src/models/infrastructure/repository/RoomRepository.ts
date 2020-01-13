@@ -17,7 +17,9 @@ export default class RoomRepositroy extends Repository<Room>
   }
 
   updateRoom(roomId: number, updatedRoom: Room) {
-    return this.update(roomId, updatedRoom).then(() => this.findOne(roomId));
+    return this.update(roomId, updatedRoom).then(() =>
+      this.findOne(roomId, { relations: ['members'] })
+    );
   }
 
   deleteRoom(roomId: number) {
@@ -27,7 +29,7 @@ export default class RoomRepositroy extends Repository<Room>
   }
 
   findRoomsByCreatorId(creatorId: number) {
-    return this.find({ where: { creatorId } });
+    return this.find({ where: { creatorId }, relations: ['members'] });
   }
 
   addUserToRoom(user: User, roomId: number) {
