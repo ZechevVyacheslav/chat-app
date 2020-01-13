@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import Room from './Room';
 import User from './User';
 
@@ -14,7 +9,8 @@ export default class Message {
 
   @ManyToOne(
     type => Room,
-    room => room.messages
+    room => room.messages,
+    { onDelete: 'CASCADE' }
   )
   public room: Room;
 

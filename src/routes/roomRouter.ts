@@ -88,7 +88,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
   /**
    * @swagger
    *
-   *  /rooms:
+   *  /rooms/{roomId}:
    *    delete:
    *      summary: Delete room of the user
    *      security:
@@ -100,7 +100,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *      parameters:
    *        - name: roomId
    *          description: Id of the room
-   *          in: form
+   *          in: path
    *          required: true
    *          type: number
    *      responses:
@@ -112,7 +112,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *          description: Invalid body parameters
    */
   router.delete(
-    '/',
+    '/:roomId',
     isAuth,
     [
       check('roomId')

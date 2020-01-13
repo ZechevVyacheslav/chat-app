@@ -49,7 +49,7 @@ export default class RoomController {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { roomId } = req.body;
+    const roomId: number = +req.params.roomId;
 
     const room = await this.roomService.findRoomById(roomId);
     if (!room) {
