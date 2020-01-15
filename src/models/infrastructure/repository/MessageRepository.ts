@@ -44,9 +44,11 @@ export default class MessageRepositroy extends Repository<Message>
   }
 
   updateMessage(messageId: number, updatedMessage: Message) {
-    return this.update(messageId, updatedMessage).then(() =>
-      this.findOne(messageId)
-    );
+    return this.update(messageId, updatedMessage)
+      .then(() => {
+        return this.findOne(messageId, { relations: ['room', 'user'] });
+      })
+      .then(populatedMessage => cutUserPasswordFromMessage(populatedMessage));
   }
 
   deleteMessage(messageId: number) {

@@ -162,11 +162,6 @@ export default class RoomController {
   };
 
   deleteMessage = async (req: IUserRequest, res: Response) => {
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //   return res.status(422).json({ errors: errors.array() });
-    // }
-
     const roomId: number = +req.params.roomId;
     const room: Room = await this.roomService.findRoomById(roomId);
     if (!room) {
@@ -175,8 +170,8 @@ export default class RoomController {
       });
     }
 
-    const { messageId } = req.body;
     const userId = req.userId;
+    const messageId: number = +req.params.messageId;
 
     const deletedMessage: Message = await this.messageService.deleteMessage(
       messageId

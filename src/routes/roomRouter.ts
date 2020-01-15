@@ -294,7 +294,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
   /**
    * @swagger
    *
-   *  /rooms/{roomId}/chat:
+   *  /rooms/{roomId}/chat/{messageId}:
    *    delete:
    *      summary: Delete message in room
    *      security:
@@ -311,7 +311,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *          type: number
    *        - name: messageId
    *          description: Id of message to be updated
-   *          in: form
+   *          in: path
    *          required: true
    *          type: number
    *      responses:
@@ -321,7 +321,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *          description: Room or message not found
    */
   router.delete(
-    '/:roomId/chat',
+    '/:roomId/chat/:messageId',
     isAuth,
     isAdminOrModerator,
     roomController.deleteMessage
