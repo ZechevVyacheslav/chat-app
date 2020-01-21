@@ -6,8 +6,9 @@ import Message from '../models/domain/core/Message';
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
 import Room from '../models/domain/core/Room';
+import IController from '../Patterns/IController';
 
-export default class RoomController {
+export default class RoomController implements IController {
   private roomService: IRoomService;
   private messageService: IMessageService;
 

@@ -1,29 +1,14 @@
-import * as express from 'express';
+import { Router } from 'express';
+import RouterBuilder from './RouterBuilder';
 import AuthController from '../controllers/AuthController';
-const router: express.Router = express.Router();
-import { connection } from '../models/infrastructure/connection/Connection';
-import { check } from 'express-validator';
-import validate from '../middlewares/validate';
 
-// Need DI implementation
-import UserRepository from '../models/infrastructure/repository/UserRepository';
-import UserService from '../models/infrastructure/serviceImpl/UserService';
-import RoleRepository from '../models/infrastructure/repository/RoleRepository';
-import RoleService from '../models/infrastructure/serviceImpl/RoleService';
+import { check } from 'express-validator';
+
+const router: Router = Router();
 
 (async () => {
-  const userRepository: UserRepository = (await connection).getCustomRepository(
-    UserRepository
-  );
-  const roleRepository: RoleRepository = (await connection).getCustomRepository(
-    RoleRepository
-  );
-  const userService: UserService = new UserService(userRepository);
-  const roleService: RoleService = new RoleService(roleRepository);
-  const homeController: AuthController = new AuthController(
-    userService,
-    roleService
-  );
+  const routerBuilder = new RouterBuilder(router);
+  const authController: AuthController = await routerBuilder.buildAuthController();
 
   /**
    * @swagger
@@ -60,25 +45,21 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
    *        422:
    *          description: Invalid body parameters
    */
-  router.post(
-    '/register',
-    validate([
-      check('email')
-        .isEmail()
-        .withMessage('Please enter a valid email.')
-        .exists()
-        .withMessage('Email must be exist.'),
-      check('username')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid username.'),
-      check('password')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid password.')
-    ]),
-    homeController.register
-  );
+  routerBuilder.buildRouteWithPost('/register', authController.register, [
+    check('email')
+      .isEmail()
+      .withMessage('Please enter a valid email.')
+      .exists()
+      .withMessage('Email must be exist.'),
+    check('username')
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage('Please enter a valid username.'),
+    check('password')
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage('Please enter a valid password.')
+  ]);
 
   /**
    * @swagger
@@ -109,20 +90,16 @@ import RoleService from '../models/infrastructure/serviceImpl/RoleService';
    *        422:
    *          description: Invalid body parameters
    */
-  router.post(
-    '/login',
-    validate([
-      check('username')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid username.'),
-      check('password')
-        .trim()
-        .isLength({ min: 5 })
-        .withMessage('Please enter a valid password.')
-    ]),
-    homeController.login
-  );
+  routerBuilder.buildRouteWithPost('/login', authController.login, [
+    check('username')
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage('Please enter a valid username.'),
+    check('password')
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage('Please enter a valid password.')
+  ]);
 })();
 
-export { router };
+export default router;
