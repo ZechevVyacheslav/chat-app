@@ -88,12 +88,41 @@ export default class RoomController implements IController {
     });
   };
 
+  // TODO dublicateRoomById
+  createRoomDublicate = async (req: IUserRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const roomId: number = +req.params.roomId;
+
+    const originalRoom = await this.roomService.findRoomById(roomId);
+    if (!originalRoom) {
+      return res.status(404).json({
+        message: 'Room not found'
+      });
+    }
+
+    const duplicatedRoom = await this.roomService.duplicateRoom(roomId);
+    const duplicatedRoomMessages = await this.messageService.duplicateMessagesByRoomId(
+      roomId,
+      duplicatedRoom.id
+    );
+
+    res.status(200).json({
+      message: 'Room was duplicated',
+      room: duplicatedRoom,
+      messages: duplicatedRoomMessages
+    });
+  };
+
   inviteUserToRoom = async (req: IUserRequest, res: Response) => {
     const { roomId, userId } = req.params;
     const user = new User();
     user.id = +userId;
 
-    const room = this.roomService.inviteUserToRoom(user, +roomId);
+    const room = await this.roomService.inviteUserToRoom(user, +roomId);
     res.status(200).json({
       message: 'OK'
     });

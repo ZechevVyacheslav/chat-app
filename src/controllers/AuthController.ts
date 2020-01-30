@@ -25,6 +25,7 @@ export default class AuthController implements IController {
       password
     }: { email: string; username: string; password: string } = req.body;
     const role: Role = await this.roleService.findRoleByTitle('User');
+    console.log(role);
     const existingUserWithEmail: User = await this.userService.getUserByEmail(
       email
     );
@@ -44,6 +45,8 @@ export default class AuthController implements IController {
       password,
       role
     );
+
+    console.log(user);
 
     const token: string = jwt.sign(
       {
@@ -84,6 +87,8 @@ export default class AuthController implements IController {
     if (!isEqual) {
       return res.status(401).json({ message: 'Wrong password!' });
     }
+
+    console.log(user);
 
     const token: string = jwt.sign(
       {

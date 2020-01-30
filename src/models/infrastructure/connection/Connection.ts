@@ -23,11 +23,13 @@ export default class Connection {
   private constructor() {
     this.connection = createConnection({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'password123',
-      database: 'test',
+      url:
+        'postgres://xhalvaus:RvJV290LAreB9PoRWgLshtKWgsryxWXT@balarama.db.elephantsql.com:5432/xhalvaus',
+      // host: 'localhost',
+      // port: 5432,
+      // username: 'postgres',
+      // password: 'password123',
+      // database: 'test',
       entities: [User, Room, Message, Role],
       synchronize: true,
       logging: false

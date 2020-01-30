@@ -6,6 +6,7 @@ export default interface IRoomService {
   findRoomById(roomId: number): Promise<Room>;
   editRoomTitle(title: string, roomId: number): Promise<Room>;
   deleteRoom(roomId: number): Promise<Room>;
+  duplicateRoom(roomId: number): Promise<Room>;
   findUserRooms(creatorId: number): Promise<Room[]>;
   inviteUserToRoom(user: User, roomId: number): Promise<Room>;
 }

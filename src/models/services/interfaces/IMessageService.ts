@@ -6,4 +6,5 @@ export default interface IMessageService {
   getMessagesByRoomId(roomId: number): Promise<Message[]>;
   updateMessage(messageId: number, updatedMessage: Message): Promise<Message>;
   deleteMessage(messageId: number): Promise<Message>;
+  duplicateMessagesByRoomId(originalRoomId: number, duplicatedRommId: number): Promise<Message[]>;
 }

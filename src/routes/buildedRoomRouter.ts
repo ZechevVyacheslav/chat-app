@@ -106,6 +106,19 @@ const router: Router = Router();
     [isAuth, isAdmin]
   );
 
+  // TODO Swagger: duplicate room
+  routerBuilder.buildRouteWithPost(
+    '/:roomId/duplicate',
+    roomController.createRoomDublicate,
+    [
+      check('roomId')
+        .trim()
+        .not()
+        .isEmpty()
+    ],
+    [isAuth, isAdmin]
+  );
+
   /**
    * @swagger
    *

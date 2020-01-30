@@ -9,6 +9,7 @@ import FindMessageByIdStrategy from './strategies/read/FindMessageByIdStrategy';
 import FindMessageByRoomIdStrategy from './strategies/read/FindMessageByRoomIdStrategy';
 import UpdateMessageStrategy from './strategies/update/UpdateMessageStrategy';
 import DeleteMessageStrategy from './strategies/delete/DeleteMessageStrategy';
+import DuplicateRoomMessagesStrategy from './strategies/create/DuplicateRoomMessagesStrategy';
 
 export default class MessageService extends BaseService
   implements IMessageService {
@@ -52,5 +53,12 @@ export default class MessageService extends BaseService
       new DeleteMessageStrategy(this.messageRepository)
     );
     return this.deletingStrategy.delete(messageId);
+  }
+
+  duplicateMessagesByRoomId(originalRoomId: number, duplicatedRommId: number) {
+    this.invoker.changeAddingStragegy(
+      new DuplicateRoomMessagesStrategy(this.messageRepository)
+    );
+    return this.addingStrategy.add({originalRoomId, duplicatedRommId});
   }
 }

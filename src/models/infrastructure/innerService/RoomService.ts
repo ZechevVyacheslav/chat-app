@@ -11,6 +11,7 @@ import FindRoomByUserIdStrategy from './strategies/read/FindRoomByUserIdStrategy
 import UpdateRoomStrategy from './strategies/update/UpdateRoomStrategy';
 import DeleteRoomStrategy from './strategies/delete/DeleteRoomStrategy';
 import AddUserToRoomStrategy from './strategies/create/AddUserToRoomStrategy';
+import DuplicateRoomStrategy from './strategies/create/DuplicateRoomStrategy';
 
 export default class RoomService extends BaseService implements IRoomService {
   private roomRepository: IRoomRepository;
@@ -57,6 +58,13 @@ export default class RoomService extends BaseService implements IRoomService {
       new DeleteRoomStrategy(this.roomRepository)
     );
     return this.deletingStrategy.delete(roomId);
+  }
+
+  duplicateRoom(roomId: number) {
+    this.invoker.changeAddingStragegy(
+      new DuplicateRoomStrategy(this.roomRepository)
+    );
+    return this.addingStrategy.add(roomId)
   }
 
   inviteUserToRoom(user: User, roomId: number) {
