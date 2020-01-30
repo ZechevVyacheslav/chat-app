@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import IUserRequest from '../userModel/IUserRequest';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
@@ -6,8 +7,9 @@ import IUserService from '../models/services/interfaces/IUserService';
 import IRoleService from '../models/services/interfaces/IRoleService';
 import User from '../models/domain/core/User';
 import Role from '../models/domain/core/Role';
+import IController from '../Patterns/IController';
 
-export default class AuthController {
+export default class AuthController implements IController {
   private userService: IUserService;
   private roleService: IRoleService;
 
@@ -16,7 +18,7 @@ export default class AuthController {
     this.roleService = roleService;
   }
 
-  register = async (req: Request, res: Response) => {
+  register = async (req: IUserRequest, res: Response) => {
     const {
       email,
       username,
@@ -66,7 +68,7 @@ export default class AuthController {
     });
   };
 
-  login = async (req: Request, res: Response) => {
+  login = async (req: IUserRequest, res: Response) => {
     const {
       username,
       password

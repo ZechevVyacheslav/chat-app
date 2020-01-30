@@ -1,34 +1,17 @@
-import * as express from 'express';
-const router: express.Router = express.Router();
-
+import { Router } from 'express';
+import RouterBuilder from './RouterBuilder';
 import RoomController from '../controllers/RoomsController';
-import Connection from '../models/infrastructure/connection/Connection';
+
+import { check } from 'express-validator';
 import isAuth from '../middlewares/is-auth';
 import isAdmin from '../middlewares/isAdmin';
 import isAdminOrModerator from '../middlewares/isAdminOrModerator';
-import validate from '../middlewares/validate';
-import { check } from 'express-validator';
 
-// Need DI implementation
-import RoomRepository from '../models/infrastructure/repository/RoomRepository';
-import RoomService from '../models/infrastructure/serviceImpl/RoomService';
-import MessageRepository from '../models/infrastructure/repository/MessageRepository';
-import MessageService from '../models/infrastructure/serviceImpl/MessageService';
+const router: Router = Router();
 
 (async () => {
-  const establishedConnection = await Connection.getInstance().getConnection();
-  const roomRepository = establishedConnection.getCustomRepository(
-    RoomRepository
-  );
-  const messageRepository = establishedConnection.getCustomRepository(
-    MessageRepository
-  );
-  const roomService: RoomService = new RoomService(roomRepository);
-  const messageService: MessageService = new MessageService(messageRepository);
-  const roomController: RoomController = new RoomController(
-    roomService,
-    messageService
-  );
+  const routerBuilder = new RouterBuilder(router);
+  const roomController: RoomController = await routerBuilder.buildRoomsController();
 
   /**
    * @swagger
@@ -46,7 +29,7 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        200:
    *          description: User rooms
    */
-  router.get('/', isAuth, roomController.getRooms);
+  routerBuilder.buildRouteWithGet('/', roomController.getRooms, null, [isAuth]);
 
   /**
    * @swagger
@@ -72,18 +55,17 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        422:
    *          description: Invalid body parameters
    */
-  router.post(
+  routerBuilder.buildRouteWithPost(
     '/',
-    isAuth,
-    validate([
+    roomController.createRoom,
+    [
       check('title')
         .trim()
         .not()
         .isEmpty()
         .withMessage("Title can't be empty")
-    ]),
-    isAdmin,
-    roomController.createRoom
+    ],
+    [isAuth, isAdmin]
   );
 
   /**
@@ -112,17 +94,16 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        422:
    *          description: Invalid body parameters
    */
-  router.delete(
+  routerBuilder.buildRouteWithDelete(
     '/:roomId',
-    isAuth,
-    validate([
+    roomController.deleteRoom,
+    [
       check('roomId')
         .trim()
         .not()
         .isEmpty()
-    ]),
-    isAdmin,
-    roomController.deleteRoom
+    ],
+    [isAuth, isAdmin]
   );
 
   /**
@@ -156,10 +137,10 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        422:
    *          description: Invalid body parameters
    */
-  router.put(
+  routerBuilder.buildRouteWithPut(
     '/',
-    isAuth,
-    validate([
+    roomController.editRoom,
+    [
       check('title')
         .trim()
         .not()
@@ -169,9 +150,8 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
         .trim()
         .not()
         .isEmpty()
-    ]),
-    isAdmin,
-    roomController.editRoom
+    ],
+    [isAuth, isAdmin]
   );
 
   /**
@@ -196,7 +176,12 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        200:
    *          description: Chat messages
    */
-  router.get('/:roomId/chat', isAuth, roomController.getRoomMessages);
+  routerBuilder.buildRouteWithGet(
+    '/:roomId/chat',
+    roomController.getRoomMessages,
+    null,
+    [isAuth]
+  );
 
   /**
    * @swagger
@@ -229,17 +214,17 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        422:
    *          description: Invalid body parameters
    */
-  router.post(
+  routerBuilder.buildRouteWithPost(
     '/:roomId/chat',
-    isAuth,
-    validate([
+    roomController.writeMessage,
+    [
       check('text')
         .trim()
         .not()
         .isEmpty()
         .withMessage("Message can't be empty")
-    ]),
-    roomController.writeMessage
+    ],
+    [isAuth]
   );
 
   /**
@@ -278,18 +263,17 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        422:
    *          description: Invalid body parameters
    */
-  router.put(
+  routerBuilder.buildRouteWithPut(
     '/:roomId/chat',
-    isAuth,
-    validate([
+    roomController.updateMessage,
+    [
       check('text')
         .trim()
         .not()
         .isEmpty()
         .withMessage("Message can't be empty")
-    ]),
-    isAdminOrModerator,
-    roomController.updateMessage
+    ],
+    [isAuth, isAdminOrModerator]
   );
 
   /**
@@ -321,11 +305,11 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        404:
    *          description: Room or message not found
    */
-  router.delete(
+  routerBuilder.buildRouteWithDelete(
     '/:roomId/chat/:messageId',
-    isAuth,
-    isAdminOrModerator,
-    roomController.deleteMessage
+    roomController.deleteMessage,
+    null,
+    [isAuth, isAdminOrModerator]
   );
 
   /**
@@ -355,11 +339,11 @@ import MessageService from '../models/infrastructure/serviceImpl/MessageService'
    *        200:
    *          description: User joined
    */
-  router.post(
+  routerBuilder.buildRouteWithPost(
     '/:roomId/invite/:userId',
-    isAuth,
-    isAdmin,
-    roomController.inviteUserToRoom
+    roomController.inviteUserToRoom,
+    null,
+    [isAuth, isAdminOrModerator]
   );
 })();
 

@@ -6,9 +6,9 @@ import * as path from 'path';
 import * as swaggerUI from 'swagger-ui-express';
 
 // Routes import
-import { router as authRouter } from './routes/authRouter';
-import roomRouter from './routes/roomRouter';
-import adminRouter from './routes/adminRouter';
+import authRouter from './routes/buildedAuthRouter';
+import roomRouter from './routes/buildedRoomRouter';
+import adminRouter from './routes/buildedAdminRouter';
 import swaggerDoc from './swaggerDoc';
 
 // View engine

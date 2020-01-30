@@ -5,8 +5,9 @@ import Role from '../models/domain/core/Role';
 import IRoleService from '../models/services/interfaces/IRoleService';
 import IUserService from '../models/services/interfaces/IUserService';
 import User from '../models/domain/core/User';
+import IController from '../Patterns/IController';
 
-export default class AdminController {
+export default class AdminController implements IController {
   private roleService: IRoleService;
   private userService: IUserService;
 
